@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+    }
+    .weather-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .weather-box {
+      width: 300px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 0.5rem;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌤️ Weather Finder</h1>
+  <div>
+    <input type="text" id="locationInput" placeholder="Enter location">
+    <button onclick="getWeather()">Search</button>
+  </div>
+  <p id="errorMsg" class="error"></p>
+  <div class="weather-container">
+    <div id="currentWeather" class="weather-box">Current weather info will appear here.</div>
+    <div id="fullMoonWeather" class="weather-box">Full moon weather info will appear here.</div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById("locationInput").value;
+      const currentDiv = document.getElementById("currentWeather");
+      const fullMoonDiv = document.getElementById("fullMoonWeather");
+      const errorMsg = document.getElementById("errorMsg");
+      errorMsg.textContent = "";
+      currentDiv.innerHTML = "Loading...";
+      fullMoonDiv.innerHTML = "Loading...";
+
+      try {
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
+        const geoData = await geoRes.json();
+
+        if (!geoData.results || geoData.results.length === 0) {
+          errorMsg.textContent = "Location not found.";
+          currentDiv.innerHTML = "";
+          fullMoonDiv.innerHTML = "";
+          return;
+        }
+
+        const { latitude, longitude, name, country } = geoData.results[0];
+
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=cloudcover,precipitation,relativehumidity_2m&timezone=auto`);
+        const weatherData = await weatherRes.json();
+        const weather = weatherData.current_weather;
+
+        let cloudCover = "Unavailable";
+        let precipitation = "Unavailable";
+        let humidity = "Unavailable";
+        if (weatherData.hourly && weatherData.hourly.time) {
+          const now = new Date(weather.time);
+          const index = weatherData.hourly.time.findIndex(t => {
+            const time = new Date(t);
+            return time.getHours() === now.getHours() && time.getDate() === now.getDate();
+          });
+          if (index !== -1) {
+            cloudCover = weatherData.hourly.cloudcover?.[index] ?? cloudCover;
+            precipitation = weatherData.hourly.precipitation?.[index] ?? precipitation;
+            humidity = weatherData.hourly.relativehumidity_2m?.[index] ?? humidity;
+          }
+        }
+
+        // Current moon phase
+        const today = new Date();
+        const timestamp = Math.floor(today.setHours(12, 0, 0, 0) / 1000);
+        const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
+        const moonData = await moonRes.json();
+
+        let moonPhase = "Unavailable";
+        let moonIcon = "";
+        if (moonData && moonData[0] && moonData[0].Phase) {
+          moonPhase = moonData[0].Phase;
+          const iconMap = {
+            "New Moon": "🌑",
+            "Waxing Crescent": "🌒",
+            "First Quarter": "🌓",
+            "Waxing Gibbous": "🌔",
+            "Full Moon": "🌕",
+            "Waning Gibbous": "🌖",
+            "Last Quarter": "🌗",
+            "Waning Crescent": "🌘"
+          };
+          moonIcon = iconMap[moonPhase] || "";
+        }
+
+        currentDiv.innerHTML = `
+          <h2>Current Weather in ${name}, ${country}</h2>
+          <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+          <p><strong>Windspeed:</strong> ${weather.windspeed} km/h</p>
+          <p><strong>Cloud Coverage:</strong> ${cloudCover}%</p>
+          <p><strong>Precipitation:</strong> ${precipitation} mm</p>
+          <p><strong>Humidity:</strong> ${humidity}%</p>
+          <p><strong>Moon Phase:</strong> ${moonIcon} ${moonPhase}</p>
+          <p><em>Last Updated:</em> ${weather.time}</p>
+        `;
+
+        let fullMoonDate = null;
+        for (let i = 0; i < 30; i++) {
+          const checkDate = new Date(Date.now() + i * 86400000);
+          const timestamp = Math.floor(checkDate.setHours(12, 0, 0, 0) / 1000);
+          const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
+          const moonData = await moonRes.json();
+          if (moonData[0] && moonData[0].Phase === "Full Moon") {
+            fullMoonDate = checkDate;
+            break;
+          }
+        }
+
+        if (!fullMoonDate) {
+          fullMoonDiv.innerHTML = "Full moon not found in next 30 days.";
+          return;
+        }
+
+        const fullMoonDateStr = fullMoonDate.toISOString().split("T")[0];
+        const fullMoonHourStr = `${fullMoonDateStr}T00:00`;
+
+        const forecastRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,cloudcover,precipitation,relativehumidity_2m&timezone=auto&start_date=${fullMoonDateStr}&end_date=${fullMoonDateStr}`);
+        const forecastData = await forecastRes.json();
+
+        const index = forecastData.hourly.time.findIndex(t => t.startsWith(fullMoonHourStr));
+
+        if (index === -1) {
+          fullMoonDiv.innerHTML = "Could not retrieve weather data for full moon at midnight.";
+          return;
+        }
+
+        const temp = forecastData.hourly.temperature_2m[index];
+        const cloud = forecastData.hourly.cloudcover[index];
+        const precip = forecastData.hourly.precipitation[index];
+        const humid = forecastData.hourly.relativehumidity_2m[index];
+
+        fullMoonDiv.innerHTML = `
+          <h2>Weather in ${name}, ${country}</h2>
+          <p><strong>Date:</strong> ${fullMoonDate.toDateString()} (Midnight)</p>
+          <p><strong>Temperature:</strong> ${temp}°C</p>
+          <p><strong>Cloud Coverage:</strong> ${cloud}%</p>
+          <p><strong>Precipitation:</strong> ${precip} mm</p>
+          <p><strong>Humidity:</strong> ${humid}%</p>
+          <p><strong>Moon Phase:</strong> 🌕 Full Moon</p>
+        `;
+      } catch (error) {
+        errorMsg.textContent = "Failed to load data.";
+        currentDiv.innerHTML = "";
+        fullMoonDiv.innerHTML = "";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
