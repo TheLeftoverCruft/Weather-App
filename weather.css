@@ -1,14 +1,25 @@
+@media only screen and (min-width: 601px) {
+* {
+  margin: 0;
+  padding: 0;
+  
+}
+
 body {
+  height: 100vh;
+  
   font-family: Arial, sans-serif;
   background: #f0f8ff;
   text-align: center;
+  
+  
 }
 
 .weather-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  /* margin-top: 20px; */
   gap: 20px;
 }
 
@@ -68,6 +79,7 @@ input, button {
 
   .sliders-wrapper {
     width: 400px;
+  
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -96,4 +108,505 @@ input, button {
     font-size: 1.2rem;
     font-weight: bold;
     text-align: left;
+  }
+
+  .weather-animation-container {
+    position: absolute;
+    width: 100%;
+    height: 200%;
+    z-index: -1;
+  }
+
+  /* Sun Mode */
+  .sun-bg {
+    background: linear-gradient(to bottom, #ffeda3, #ffcc70);
+  }
+
+  .sun {
+    position: absolute;
+    top: 10%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, #fffec1 0%, #ffd54f 60%, transparent 80%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px 20px #fff176;
+    z-index: 2;
+  }
+
+  .rays {
+    position: absolute;
+    top: 10%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.3) 0deg 2deg,
+      transparent 2deg 8deg
+    );
+    border-radius: 50%;
+    animation: spin 20s linear infinite;
+    z-index: 1;
+  }
+
+  @keyframes spin {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+  /* Rain Mode */
+  .rain-bg {
+    background: #0e0e52;
+  }
+
+  .rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .raindrop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    animation: fall linear infinite;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(100vh);
+    }
+  }
+
+  /* Thunder flash */
+  .flash {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    z-index: 5;
+    pointer-events: none;
+    animation: flashAnim 0.2s ease-in-out;
+  }
+
+  @keyframes flashAnim {
+    0% { opacity: 0; }
+    20% { opacity: 0.25; }
+    100% { opacity: 0; }
+  }
+
+  /* Moon Mode */
+  .moon-bg {
+    background: radial-gradient(ellipse at bottom, #000015, #000);
+  }
+
+  .moon-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #ccc;
+    overflow: hidden;
+    box-shadow: 0 0 40px #ccc;
+    top: 10%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+  }
+
+  .shadow-mask {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: black;
+    animation: moonPhaseSweep 10s linear infinite;
+    mix-blend-mode: multiply;
+  }
+
+  @keyframes moonPhaseSweep {
+    0%   { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Button */
+  .toggle-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    background: #ffffffbb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+  }
+
+  .bottom-text {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5em;
+    color: white;
+    opacity: 0.9;
+    z-index: 10;
+    pointer-events: none;
+    transition: color 2s ease, opacity 2s ease;
+  }
+}
+@media only screen and (max-width: 600px) {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 5vh;
+  }
+  h2 {
+    font-size: 3vh;
+  }
+  p {
+    font-size: 2vh;
+  }
+  table {
+    font-size: 2vh;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    position: relative;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    height: 120vh;
+    font-family: Arial, sans-serif;
+    background: #f0f8ff;
+    text-align: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+/* Container */
+.weather-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1vh;
+  gap: 2vh;
+  padding: 2vh 2vw;
+  width: 100%;
+}
+
+/* Top Row (side-by-side boxes) */
+.top-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2vw;
+  width: 100%;
+  flex-wrap: wrap; /* stack on small screens */
+}
+
+/* Individual Weather Boxes */
+.weather-box {
+  width: 40vw;        /* each box takes ~40% of viewport width */
+  min-width: 150px;
+  height: auto;
+  padding: 2vh 2vw;
+  background: #ffffff;
+  border-radius: 1vh;
+  box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+/* Wide Box (matches combined width of two .weather-box elements) */
+.weather-box.wide {
+  width: 90vw;        /* ~2 * 40vw + 2 * gap (2vw) */
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 2vh 0vw;
+}
+
+/* Table Styling */
+#closestday table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1vh;
+  padding: 0;
+  margin:0%;
+}
+
+#closestday th,
+#closestday td {
+  border: 1px solid #ccc;
+  padding: 0.1vh;
+  text-align: center;
+}
+
+#closestday th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+  
+  /* Inputs */
+  input, button {
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  /* Error */
+  .error {
+    color: red;
+  }
+
+  #top_part {
+    padding-top: 10vh;
+  }
+  
+/* Sliders Wrapper */
+.sliders-wrapper {
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* ← no vertical gap between slider rows */
+}
+
+/* Slider Row */
+.slider-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.3rem 0; /* optional: fine vertical spacing between rows */
+}
+
+/* Label on the left */
+.label {
+  flex: 0 0 30%;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: bold;
+  padding-left: 3vh;
+}
+
+/* Slider in the middle */
+.slider {
+  flex: 1;
+  appearance: none;
+  height: 6px;
+  background: #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* Display on the right */
+.percentage-display {
+  flex: 0 0 20%;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+  
+  /* Weather Animation */
+  .weather-animation-container {
+    position: absolute;
+    width: 100%;
+    height: 200%;
+    z-index: -1;
+  }
+  
+  /* Sun Mode */
+  .sun-bg {
+    background: linear-gradient(to bottom, #ffeda3, #ffcc70);
+  }
+  
+  .sun {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, #fffec1 0%, #ffd54f 60%, transparent 80%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px 20px #fff176;
+    z-index: 2;
+  }
+  
+  .rays {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.3) 0deg 2deg,
+      transparent 2deg 8deg
+    );
+    border-radius: 50%;
+    animation: spin 20s linear infinite;
+    z-index: 1;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+  
+  /* Rain Mode */
+  .rain-bg {
+    background: #0e0e52;
+  }
+  
+  .rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  .raindrop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    animation: fall linear infinite;
+  }
+  
+  @keyframes fall {
+    to {
+      transform: translateY(100vh);
+    }
+  }
+  
+  /* Thunder flash */
+  .flash {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    z-index: 5;
+    pointer-events: none;
+    animation: flashAnim 0.2s ease-in-out;
+  }
+  
+  @keyframes flashAnim {
+    0% { opacity: 0; }
+    20% { opacity: 0.25; }
+    100% { opacity: 0; }
+  }
+  
+  /* Moon Mode */
+  .moon-bg {
+    background: radial-gradient(ellipse at bottom, #000015, #000);
+  }
+  
+  .moon-container {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #ccc;
+    overflow: hidden;
+    box-shadow: 0 0 30px #ccc;
+  }
+  
+  .shadow-mask {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: black;
+    animation: moonPhaseSweep 10s linear infinite;
+    mix-blend-mode: multiply;
+  }
+  
+  @keyframes moonPhaseSweep {
+    0%   { left: -100%; }
+    100% { left: 100%; }
+  }
+  
+  /* Button */
+  .toggle-btn {
+    position: fixed;
+    top: 1vh;
+    left: 1vh;
+    padding: 1vh 1vh;
+    font-size: 1em;
+    background: #ffffffbb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+  }
+  
+  /* Bottom Text */
+  .bottom-text {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  
+  /* Optional: ultra-small screens */
+  @media (max-width: 350px) {
+    .weather-box, .weather-box.wide {
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+  
+    .label, .percentage-display {
+      font-size: 0.9rem;
+    }
+  
+    .toggle-btn {
+      font-size: 0.9em;
+      padding: 0.4em 0.8em;
+    }
+  }
+  
   }

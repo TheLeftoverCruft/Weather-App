@@ -13,7 +13,7 @@
         "tempSlider": "°C",
         "windSlider": "km/h",
         "cloudSlider": "%",
-        "rainSlider": "mm",
+        "rainSlider": "%",
         "humiditySlider": "%",
         "moonSlider": "%",
         
@@ -99,19 +99,19 @@ async function getWeather() {
 
       let moonPhase = "Unavailable";
       let moonIcon = "";
+      const mooniconMap = {
+        "New Moon": "🌑",
+        "Waxing Crescent": "🌒",
+        "1st Quarter": "🌓",
+        "Waxing Gibbous": "🌔",
+        "Full Moon": "🌕",
+        "Waning Gibbous": "🌖",
+        "3rd Quarter": "🌗",
+        "Waning Crescent": "🌘"
+      };
       if (moonData && moonData[0] && moonData[0].Phase) {
         moonPhase = moonData[0].Phase;
-        const iconMap = {
-          "New Moon": "🌑",
-          "Waxing Crescent": "🌒",
-          "First Quarter": "🌓",
-          "Waxing Gibbous": "🌔",
-          "Full Moon": "🌕",
-          "Waning Gibbous": "🌖",
-          "Last Quarter": "🌗",
-          "Waning Crescent": "🌘"
-        };
-        moonIcon = iconMap[moonPhase] || "";
+        moonIcon = mooniconMap[moonPhase] || "";
       }
 
       // block for current temp in that city
@@ -132,6 +132,7 @@ async function getWeather() {
       try {
     
         let moonillumin = [];
+        let moonphase = [];
         for (let i = 0; i < 16; i++) {
           const checkDate = new Date(Date.now() + i * 86400000);
           const timestamp = Math.floor(checkDate.setHours(12, 0, 0, 0) / 1000);
@@ -140,6 +141,8 @@ async function getWeather() {
          
           if (moonData[0]) {
             moonillumin[i]=moonData[0].Illumination;
+            moonphase[i]=moonData[0].Phase;
+            
             // moonillumin += '<tr><th>'+timestamp+'</th><th>'+(Math.round((((Math.abs(moonilluminreq-moonData[0].Illumination))/moonilluminreq)**2)*100)/100)+'</th></tr>' ;
             
           }
@@ -293,7 +296,7 @@ async function getWeather() {
         <p><strong>Cloud Coverage:</strong> ${Math.round(clouddaily[closestdayindex])}%</p>
         <p><strong>Precipitation:</strong> ${Math.round(precipdaily[closestdayindex])} %</p>
         <p><strong>Humidity:</strong> ${Math.round(humiddaily[closestdayindex])}%</p>
-        <p><strong>Moon Phase:</strong> ${Math.round(moonillumin[closestdayindex])}</p>
+        <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
       `;
 
 

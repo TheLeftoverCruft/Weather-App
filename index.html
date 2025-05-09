@@ -8,6 +8,13 @@
     <title>Weather App</title>
 </head>
 <body>
+  <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
+
+  <div id="weather" class="weather-animation-container sun-bg">
+    <div class="sun"></div>
+    <div class="rays"></div>
+  </div>
+  <div id="top_part">
   <h1>🌤️ Weather Finder</h1>
   <div class="sliders-wrapper">
 
@@ -19,8 +26,8 @@
 
     <div class="slider-container">
       <div class="label">Wind Speed</div>
-      <input type="range" class="slider" id="windSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="windDisplay">50km/h</div>
+      <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
+      <div class="percentage-display" id="windDisplay">25km/h</div>
     </div>
 
     <div class="slider-container">
@@ -47,7 +54,7 @@
       <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="moonDisplay">50%</div>
     </div>
-  
+  </div>
 
 
 
@@ -66,7 +73,8 @@
     <div id="closestday" class="weather-box wide">Each day weighting will appear here</div>
   </div>
 
-
+  <div class="bottom-text" id="bottomText">by TheLeftoverCruft</div>
 </body>
 <script src="weather.js"></script>
+<script src="backgroundweatheranimation.js"></script>
 </html>
