@@ -9,6 +9,7 @@
 </head>
 <body>
   <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
+  <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
 
   <div id="weather" class="weather-animation-container sun-bg">
     <div class="sun"></div>
@@ -16,44 +17,8 @@
   </div>
   <div id="top_part">
   <h1>🌤️ Weather Finder</h1>
-  <div class="sliders-wrapper">
+  <div id="sliders-wrapper">
 
-    <div class="slider-container">
-      <div class="label">Temperature</div>
-      <input type="range" class="slider" id="tempSlider" min="-50" max="50" value="0" autocomplete="off">
-      <div class="percentage-display" id="tempDisplay">0°C</div>
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Wind Speed</div>
-      <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
-      <div class="percentage-display" id="windDisplay">25km/h</div>
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Cloud Coverage</div>
-      <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="cloudDisplay">50%</div>
-    </div>
-    
-
-    <div class="slider-container">
-      <div class="label">Precipitation Chance</div>
-      <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="rainDisplay">50%</div>
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Humidity</div>
-      <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="humidityDisplay">50%</div>
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Full Moon</div>
-      <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="moonDisplay">50%</div>
-    </div>
   </div>
 
 
