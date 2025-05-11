@@ -1,86 +1,11 @@
   // slider
 
 
-  const sliders = document.querySelectorAll('.slider');
+ 
 
-  sliders.forEach(slider => {
-    if (getCookie("imperial")) {
-      slider.addEventListener('input', function(event) {
-        const sliderId = event.target.id; // Get the ID of the slider that triggered the event
-        // console.log('.'+sliderId.replace('Slider','Display'));
-        display =document.getElementById(sliderId.replace('Slider','Display'));
-        // console.log(display)
-        
-        const valuetype = {
-          "tempSlider": "°F",
-          "windSlider": "mph",
-          "cloudSlider": "%",
-          "rainSlider": "%",
-          "humiditySlider": "%",
-          "moonSlider": "%",
-          
-        };
-        display.textContent = `${event.target.value}`+valuetype[sliderId];
-        // console.log("Slider ID:", sliderId); // Logs 'moonSlider'
-      });
-    } else if (getCookie("scientific")) {
-      slider.addEventListener('input', function(event) {
-        const sliderId = event.target.id; // Get the ID of the slider that triggered the event
-        // console.log('.'+sliderId.replace('Slider','Display'));
-        display =document.getElementById(sliderId.replace('Slider','Display'));
-        // console.log(display)
-        
-        const valuetype = {
-          "tempSlider": "°C",
-          "windSlider": "km/h",
-          "cloudSlider": "%",
-          "rainSlider": "%",
-          "humiditySlider": "%",
-          "moonSlider": "%",
-          
-        };
-        display.textContent = `${event.target.value}`+valuetype[sliderId];
-        // console.log("Slider ID:", sliderId); // Logs 'moonSlider'
-      });
-    } else {
-      slider.addEventListener('input', function(event) {
-        const sliderId = event.target.id; // Get the ID of the slider that triggered the event
-        // console.log('.'+sliderId.replace('Slider','Display'));
-        display =document.getElementById(sliderId.replace('Slider','Display'));
-        // console.log(display)
-        
-        const valuetype = {
-          "tempSlider": "°C",
-          "windSlider": "km/h",
-          "cloudSlider": "%",
-          "rainSlider": "%",
-          "humiditySlider": "%",
-          "moonSlider": "%",
-          
-        };
-        display.textContent = `${event.target.value}`+valuetype[sliderId];
-        // console.log("Slider ID:", sliderId); // Logs 'moonSlider'
-      });
-    }
-    slider.addEventListener('input', function(event) {
-      const sliderId = event.target.id; // Get the ID of the slider that triggered the event
-      // console.log('.'+sliderId.replace('Slider','Display'));
-      display =document.getElementById(sliderId.replace('Slider','Display'));
-      // console.log(display)
-      
-      const valuetype = {
-        "tempSlider": "°C",
-        "windSlider": "km/h",
-        "cloudSlider": "%",
-        "rainSlider": "%",
-        "humiditySlider": "%",
-        "moonSlider": "%",
-        
-      };
-      display.textContent = `${event.target.value}`+valuetype[sliderId];
-      // console.log("Slider ID:", sliderId); // Logs 'moonSlider'
-    });
-  });
+  
+
+
 
   function setCookie(name, value, days = 7) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -750,45 +675,82 @@ function setslidersSci() {
 
 
 function setslidersImp() {
-const sliderDiv = document.getElementById("sliders-wrapper");
-sliderDiv.innerHTML = `
-  <div class="slider-container">
-    <div class="label">Temperature</div>
-    <input type="range" class="slider" id="tempSlider" min="-50" max="100" value="25" autocomplete="off">
-    <div class="percentage-display" id="tempDisplay">25°F</div>
-  </div>
+  const sliderDiv = document.getElementById("sliders-wrapper");
+  sliderDiv.innerHTML = `
+    <div class="slider-container">
+      <div class="label">Temperature</div>
+      <input type="range" class="slider" id="tempSlider" min="-50" max="100" value="25" autocomplete="off">
+      <div class="percentage-display" id="tempDisplay">25°F</div>
+    </div>
+    <div class="slider-container">
+      <div class="label">Wind Speed</div>
+      <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
+      <div class="percentage-display" id="windDisplay">25mph</div>
+    </div>
+    <div class="slider-container">
+      <div class="label">Cloud Coverage</div>
+      <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
+      <div class="percentage-display" id="cloudDisplay">50%</div>
+    </div>
+    <div class="slider-container">
+      <div class="label">Precipitation Chance</div>
+      <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
+      <div class="percentage-display" id="rainDisplay">50%</div>
+    </div>
+    <div class="slider-container">
+      <div class="label">Humidity</div>
+      <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
+      <div class="percentage-display" id="humidityDisplay">50%</div>
+    </div>
+    <div class="slider-container">
+      <div class="label">Full Moon</div>
+      <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
+      <div class="percentage-display" id="moonDisplay">50%</div>
+    </div>
+  `;
 
-  <div class="slider-container">
-    <div class="label">Wind Speed</div>
-    <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
-    <div class="percentage-display" id="windDisplay">25mph</div>
-  </div>
 
-  <div class="slider-container">
-    <div class="label">Cloud Coverage</div>
-    <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
-    <div class="percentage-display" id="cloudDisplay">50%</div>
-  </div>
-  
-
-  <div class="slider-container">
-    <div class="label">Precipitation Chance</div>
-    <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
-    <div class="percentage-display" id="rainDisplay">50%</div>
-  </div>
-
-  <div class="slider-container">
-    <div class="label">Humidity</div>
-    <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
-    <div class="percentage-display" id="humidityDisplay">50%</div>
-  </div>
-
-  <div class="slider-container">
-    <div class="label">Full Moon</div>
-    <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
-    <div class="percentage-display" id="moonDisplay">50%</div>
-  </div>
-`;
 }
 
 getSliderUnit();
+
+const sliders = document.querySelectorAll('.slider');
+
+sliders.forEach(slider => {
+  slider.addEventListener('input', function (event) {
+    const sliderId = event.target.id;
+    const display = document.getElementById(sliderId.replace('Slider', 'Display'));
+
+    // Default to metric
+    let valuetype = {
+      "tempSlider": "°C",
+      "windSlider": "km/h",
+      "cloudSlider": "%",
+      "rainSlider": "%",
+      "humiditySlider": "%",
+      "moonSlider": "%"
+    };
+
+    if (getCookie("imperial")) {
+      valuetype = {
+        "tempSlider": "°F",
+        "windSlider": "mph",
+        "cloudSlider": "%",
+        "rainSlider": "%",
+        "humiditySlider": "%",
+        "moonSlider": "%"
+      };
+    } else if (getCookie("scientific")) {
+      valuetype = {
+        "tempSlider": "°C",
+        "windSlider": "km/h",
+        "cloudSlider": "%",
+        "rainSlider": "%",
+        "humiditySlider": "%",
+        "moonSlider": "%"
+      };
+    }
+
+    display.textContent = `${event.target.value}${valuetype[sliderId]}`;
+  });
+});
