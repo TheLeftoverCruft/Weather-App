@@ -76,6 +76,7 @@ input, button {
 }
  /* sidebar */
  #sidebar {
+
   position: fixed;
   top: 0;
   left: -25vh;
@@ -156,6 +157,10 @@ span {
   min-width: 40px;
   text-align: left;
   font-weight: bold;
+}
+
+.topbar {
+  display: none;
 }
 
   /* slider */
@@ -552,98 +557,104 @@ input[type=number] {
   width: 5vh;
   border: 0.1vh solid #999;
   padding: 0.1vh;
+
 }
  /* sidebar */
- #sidebar {
+/* Sidebar initially collapsed so only the title is visible */
+/* FULL topbar initially hidden above the screen */
+#topbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   position: fixed;
-  top: 0;
-  left: -25vw;
-  width: 25vw;
-  height: 100%;
+  top: -100vh; /* hidden above view */
+  left: 0;
+  width: 100vw;
   background: #ffffff;
   color: rgb(0, 0, 0);
-  transition: left 0.2s;
-  display: flex; /* Flexbox layout */
-  flex-direction: row; /* Horizontal layout */
-  align-items: center;
-  font-size: 3vw;
- 
+  transition: top 0.3s ease;
+  z-index: 99; /* below title */
+  padding-top: 8vh; /* create space for title bar */
 }
 
-#sidebar.open {
-  left: 0;
+/* When .open is added, slide entire bar (title + sliders) into view */
+#topbar.open {
+  top: 0;
 }
 
+/* Title is at the top of the bar and always visible when open */
 #settings_title {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  text-align: center;
-  font-size: 3vw;
-  padding-right: 1vw;
-  background-color: #ffffff;
-  border-right: #000 solid;
-  border-radius: 2vw  0vw 0vw 2vw;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 1vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   margin: 0;
-  margin-left: 2vw;
-}
-
-.bar_title:hover {
+  font-size: 3vh;
+  text-align: center;
+  padding: 1vh;
+  background-color: #ffffff;
+  border-bottom: 2px solid #000;
+  border-radius: 0 0 1vw 1vw;
+  z-index: 100;
   cursor: pointer;
 }
-.bar {
-  z-index: 3;
-}
 
-
+/* Slider container inside the bar */
 .container {
-  margin-left: 2vh;
-  zoom: 30%;
-  height: 100%;
+  zoom: 60%;
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding: 2vh 0;
 }
 
 .slider-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
+  align-items: center;
 }
 
-.slider-row {
+.weightslider {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
 }
 
-label {
+.weightslider label {
   min-width: 100px;
   text-align: right;
-  font-size: 1rem;
 }
 
-input[type="range"] {
+.weightslider input[type="range"] {
   width: 300px;
 }
 
-span {
+.weightslider span {
   min-width: 40px;
   text-align: left;
   font-weight: bold;
 }
 
+
+
+#sidebar {
+  display: none;
+}
+
+
+
+
   /* Button */
   .toggle-btn {
     position: absolute;
-    top: 1vw;
-    left: 1vw;
+    top: 10vh;
+    left: 1vh;
     padding: 1vw 2vw;
-    font-size: 2vw;
+    font-size: 2vh;
     background: #ffffffbb;
     border: solid #000000;
     border-radius: 1vw;
@@ -653,7 +664,7 @@ span {
   }
 
   #change-unit {
-    top: 3vh;
+    top: 15vh;
   }
   
   /* Bottom Text */
