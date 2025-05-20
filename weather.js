@@ -1,4 +1,10 @@
-  // slider
+// side bar
+function toggleBar(idname) {
+  var bar = document.getElementById(idname);
+
+  bar.classList.toggle("open");
+
+}
 
 
  
@@ -48,16 +54,56 @@
     location.reload();
   }
 
-  function closestcalc(input,required,range) {
+  function closestcalc(input,required,range,weighting,overallweighting) {
+
+
+     weighting+=1;
+
+    
     required+=0.001;
-    output = input.map(n => Math.round(((Math.abs(required-n)/required)/range)*100)/100)
-    return (output)
+    output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
+  
+            // Create an array of [value, originalIndex] pairs
+    const indexed = output.map((value, index) => ({ value, index }));
+
+    // Sort by value (ascending)
+    indexed.sort((a, b) => b.value - a.value);
+
+    // Create an array to hold the ranks
+    const ranks = new Array(input.length);
+
+    // Assign ranks based on sorted order
+    for (let rank = 0; rank < indexed.length; rank++) {
+        ranks[indexed[rank].index] = (rank + 1)**(weighting*0.5) ;
+    }
+
+    return ranks;
+
+    // if (weighting<=0) {
+    //   weighting=1;
+    // }
+    
+    // required+=0.001;
+
+  
+
+
+    // output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
+    // // output = input.map(n => (Math.abs(required-n)/(required)));
+    // weighted = output.map(n => (1/n)/(overallweighting/weighting));
+    // return (output)
+    
+
     
   }
 
-  function closestcalc4temp(input,required,range) {
+  function closestcalc4temp(input,required,range,weighting,overallweighting) {
+    if (weighting<=0) {
+      weighting=1;
+    }
     required+=0.001;
-    output = input.map(n => Math.round(((Math.abs(required-n)/required)/(2))/100)/(100))
+    output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
+    weighted = output.map(n => (1/n)/(overallweighting/weighting));
     return (output)
     
   }
@@ -210,37 +256,46 @@ async function getWeather() {
               }
         
         
-            const timeArray = data.hourly.time;
-            const temperatureArray = data.hourly.temperature_2m;
-            const windspeedArray = data.hourly.wind_speed_10m;
-            const cloudcoverArray = data.hourly.cloudcover;
-            const precipitationChanceArray = data.hourly.precipitation_probability;
-            const humidityArray = data.hourly.relative_humidity_2m;
-        
-            const moonreq  = (document.getElementById("moonSlider").value)/100;
-            const tempreq  = (document.getElementById("tempSlider").value)*(9/5)+(32);
-            const cloudreq  = (document.getElementById("cloudSlider").value);
-            const windreq  = (document.getElementById("windSlider").value)/100;
-            const precipreq  = (document.getElementById("rainSlider").value)/100;
-            const humidreq  = (document.getElementById("humiditySlider").value);
-    
-            const moonrange  = (document.getElementById("moonSlider").max-document.getElementById("moonSlider").min)/100;
-            const temprange = (document.getElementById("tempSlider").max-document.getElementById("tempSlider").min);
-            const cloudrange  = (document.getElementById("cloudSlider").max-document.getElementById("cloudSlider").min);
-            const windrange  = (document.getElementById("windSlider").max-document.getElementById("windSlider").min);
-            const preciprange  = (document.getElementById("rainSlider").max-document.getElementById("rainSlider").min);
-            const humidrange  = (document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min);
-              
-    
-            const timedaily = Array(16).fill(0);
-            const tempdaily = Array(16).fill(0);
-            const winddaily = Array(16).fill(0);
-            const clouddaily = Array(16).fill(0);
-            const precipdaily = Array(16).fill(0);
-            const humiddaily = Array(16).fill(0);
-    
-            timedaily[0]=timeArray[0].split("T")[0];
-            dayinc=0;
+              const timeArray = data.hourly.time;
+              const temperatureArray = data.hourly.temperature_2m;
+              const windspeedArray = data.hourly.wind_speed_10m;
+              const cloudcoverArray = data.hourly.cloudcover;
+              const precipitationChanceArray = data.hourly.precipitation_probability;
+              const humidityArray = data.hourly.relative_humidity_2m;
+          
+              const moonreq  = parseInt((document.getElementById("moonSlider").value));
+              const tempreq  = parseInt((document.getElementById("tempSlider").value));
+              const cloudreq  = parseInt((document.getElementById("cloudSlider").value));
+              const windreq  = parseInt((document.getElementById("windSlider").value));
+              const precipreq  = parseInt((document.getElementById("rainSlider").value));
+              const humidreq  = parseInt((document.getElementById("humiditySlider").value));
+      
+              const moonrange  = parseInt((document.getElementById("moonSlider").max-document.getElementById("moonSlider").min));
+              const temprange = parseInt((document.getElementById("tempSlider").max-document.getElementById("tempSlider").min));
+              const cloudrange  = parseInt((document.getElementById("cloudSlider").max-document.getElementById("cloudSlider").min));
+              const windrange  = parseInt((document.getElementById("windSlider").max-document.getElementById("windSlider").min));
+              const preciprange  = parseInt((document.getElementById("rainSlider").max-document.getElementById("rainSlider").min));
+              const humidrange  = parseInt((document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min));
+                
+      
+              const moonweighting  = parseInt((document.getElementById("moonweightslider").value));
+              const tempweighting = parseInt((document.getElementById("tempweightslider").value));
+              const cloudweighting  = parseInt((document.getElementById("cloudweightslider").value));
+              const windweighting  = parseInt((document.getElementById("windweightslider").value));
+              const precipweighting  = parseInt((document.getElementById("rainweightslider").value));
+              const humidweighting  = parseInt((document.getElementById("humidityweightslider").value));
+  
+  
+              const moonDaily = moonillumin.map(n => n*100)
+              const timedaily = Array(16).fill(0);
+              const tempdaily = Array(16).fill(0);
+              const winddaily = Array(16).fill(0);
+              const clouddaily = Array(16).fill(0);
+              const precipdaily = Array(16).fill(0);
+              const humiddaily = Array(16).fill(0);
+      
+              timedaily[0]=timeArray[0].split("T")[0];
+              dayinc=0;
             
             for (let i=0; i<timeArray.length; i++) {
               
@@ -257,17 +312,41 @@ async function getWeather() {
               precipdaily[dayinc]+=(precipitationChanceArray[i]/24);
               humiddaily[dayinc]+=(humidityArray[i]/24);
             }
+            const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
         
-            const moon= closestcalc(moonillumin,moonreq,moonrange);
-            const temp = closestcalc4temp(tempdaily,tempreq,temprange);
-            const wind = closestcalc(winddaily,windreq,windrange);
-            const cloud = closestcalc(clouddaily,cloudreq,cloudrange);
-            const precip = closestcalc(precipdaily,precipreq,preciprange);
-            const humid = closestcalc(humiddaily,humidreq,humidrange);
+        
+            const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
+            const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
+            const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
+            const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
+            const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
+            const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
+
+            console.log("overallweighting",overallweighting);
+            console.log("humiddaily",humiddaily);
+            console.log("humidreq",humidreq);
+            console.log("humidweighting",humidweighting);
+            console.log("humidrane",humidrange);
+            console.log("humid",humid);
+            console.log("tempdaily",tempdaily);
+            console.log("tempreq",tempreq);
+            console.log("tempweighting",tempweighting);
+            console.log("temprane",temprange);
+            console.log("temp",temp);
+            console.log("moondaily",moonDaily);
+            console.log("moonreq",moonreq);
+            console.log("moonweighting",moonweighting);
+            console.log("moonrane",moonrange);
+            console.log("moon",moon);
+            console.log("winddaily",winddaily);
+            console.log("windreq",windreq);
+            console.log("windweighting",windweighting);
+            console.log("windrane",windrange);
+            console.log("wind",wind);
     
             const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
             console.log(dayclosestcalc);
-            const closestdayindex = dayclosestcalc.indexOf(Math.min(...dayclosestcalc))
+            const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
             
             console.log(timedaily[closestdayindex],timedaily);
     
@@ -476,7 +555,6 @@ async function getWeather() {
                 return;
               }
         
-        
             const timeArray = data.hourly.time;
             const temperatureArray = data.hourly.temperature_2m;
             const windspeedArray = data.hourly.wind_speed_10m;
@@ -484,21 +562,30 @@ async function getWeather() {
             const precipitationChanceArray = data.hourly.precipitation_probability;
             const humidityArray = data.hourly.relative_humidity_2m;
         
-            const moonreq  = (document.getElementById("moonSlider").value)/100;
-            const tempreq  = (document.getElementById("tempSlider").value);
-            const cloudreq  = (document.getElementById("cloudSlider").value);
-            const windreq  = (document.getElementById("windSlider").value)/100;
-            const precipreq  = (document.getElementById("rainSlider").value)/100;
-            const humidreq  = (document.getElementById("humiditySlider").value);
+            const moonreq  = parseInt((document.getElementById("moonSlider").value));
+            const tempreq  = parseInt((document.getElementById("tempSlider").value));
+            const cloudreq  = parseInt((document.getElementById("cloudSlider").value));
+            const windreq  = parseInt((document.getElementById("windSlider").value));
+            const precipreq  = parseInt((document.getElementById("rainSlider").value));
+            const humidreq  = parseInt((document.getElementById("humiditySlider").value));
     
-            const moonrange  = (document.getElementById("moonSlider").max-document.getElementById("moonSlider").min)/100;
-            const temprange = (document.getElementById("tempSlider").max-document.getElementById("tempSlider").min);
-            const cloudrange  = (document.getElementById("cloudSlider").max-document.getElementById("cloudSlider").min);
-            const windrange  = (document.getElementById("windSlider").max-document.getElementById("windSlider").min);
-            const preciprange  = (document.getElementById("rainSlider").max-document.getElementById("rainSlider").min);
-            const humidrange  = (document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min);
+            const moonrange  = parseInt((document.getElementById("moonSlider").max-document.getElementById("moonSlider").min));
+            const temprange = parseInt((document.getElementById("tempSlider").max-document.getElementById("tempSlider").min));
+            const cloudrange  = parseInt((document.getElementById("cloudSlider").max-document.getElementById("cloudSlider").min));
+            const windrange  = parseInt((document.getElementById("windSlider").max-document.getElementById("windSlider").min));
+            const preciprange  = parseInt((document.getElementById("rainSlider").max-document.getElementById("rainSlider").min));
+            const humidrange  = parseInt((document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min));
               
     
+            const moonweighting  = parseInt((document.getElementById("moonweightslider").value));
+            const tempweighting = parseInt((document.getElementById("tempweightslider").value));
+            const cloudweighting  = parseInt((document.getElementById("cloudweightslider").value));
+            const windweighting  = parseInt((document.getElementById("windweightslider").value));
+            const precipweighting  = parseInt((document.getElementById("rainweightslider").value));
+            const humidweighting  = parseInt((document.getElementById("humidityweightslider").value));
+
+
+            const moonDaily = moonillumin.map(n => n*100)
             const timedaily = Array(16).fill(0);
             const tempdaily = Array(16).fill(0);
             const winddaily = Array(16).fill(0);
@@ -520,21 +607,47 @@ async function getWeather() {
               timedaily[dayinc]=timeArray[i].split("T")[0];
               tempdaily[dayinc]+=(temperatureArray[i]/24);
               winddaily[dayinc]+=(windspeedArray[i]/24);
-              clouddaily[dayinc]+=(cloudcoverArray[i]/24);
+              clouddaily[dayinc]+=((cloudcoverArray[i]/24));
               precipdaily[dayinc]+=(precipitationChanceArray[i]/24);
-              humiddaily[dayinc]+=(humidityArray[i]/24);
+              humiddaily[dayinc]+=((humidityArray[i]/24));
             }
+
+            const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
         
-            const moon= closestcalc(moonillumin,moonreq,moonrange);
-            const temp = closestcalc4temp(tempdaily,tempreq,temprange);
-            const wind = closestcalc(winddaily,windreq,windrange);
-            const cloud = closestcalc(clouddaily,cloudreq,cloudrange);
-            const precip = closestcalc(precipdaily,precipreq,preciprange);
-            const humid = closestcalc(humiddaily,humidreq,humidrange);
+            const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
+            const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
+            const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
+            const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
+            const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
+            const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
+
+
+            console.log("overallweighting",overallweighting);
+            console.log("humiddaily",humiddaily);
+            console.log("humidreq",humidreq);
+            console.log("humidweighting",humidweighting);
+            console.log("humidrane",humidrange);
+            console.log("humid",humid);
+            console.log("tempdaily",tempdaily);
+            console.log("tempreq",tempreq);
+            console.log("tempweighting",tempweighting);
+            console.log("temprane",temprange);
+            console.log("temp",temp);
+            console.log("moondaily",moonDaily);
+            console.log("moonreq",moonreq);
+            console.log("moonweighting",moonweighting);
+            console.log("moonrane",moonrange);
+            console.log("moon",moon);
+            console.log("winddaily",winddaily);
+            console.log("windreq",windreq);
+            console.log("windweighting",windweighting);
+            console.log("windrane",windrange);
+            console.log("wind",wind);
     
+            // const dayclosestcalc = moon.map((value, index) => (value/6) + (temp[index]/6) + (wind[index]/6) + (cloud[index]/6) + (precip[index]/6) + (humid[index]/6));
             const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
             console.log(dayclosestcalc);
-            const closestdayindex = dayclosestcalc.indexOf(Math.min(...dayclosestcalc))
+            const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
             
             console.log(timedaily[closestdayindex],timedaily);
     
@@ -637,18 +750,21 @@ function setslidersSci() {
       <div class="label">Temperature</div>
       <input type="range" class="slider" id="tempSlider" min="-50" max="50" value="0" autocomplete="off">
       <div class="percentage-display" id="tempDisplay">0°C</div>
+      
     </div>
 
     <div class="slider-container">
       <div class="label">Wind Speed</div>
       <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
       <div class="percentage-display" id="windDisplay">25km/h</div>
+
     </div>
 
     <div class="slider-container">
       <div class="label">Cloud Coverage</div>
       <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="cloudDisplay">50%</div>
+
     </div>
     
 
@@ -656,18 +772,21 @@ function setslidersSci() {
       <div class="label">Precipitation Chance</div>
       <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="rainDisplay">50%</div>
+
     </div>
 
     <div class="slider-container">
       <div class="label">Humidity</div>
       <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="humidityDisplay">50%</div>
+
     </div>
 
     <div class="slider-container">
       <div class="label">Full Moon</div>
       <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="moonDisplay">50%</div>
+
     </div>
 `;
 }
@@ -681,31 +800,37 @@ function setslidersImp() {
       <div class="label">Temperature</div>
       <input type="range" class="slider" id="tempSlider" min="-50" max="100" value="25" autocomplete="off">
       <div class="percentage-display" id="tempDisplay">25°F</div>
+
     </div>
     <div class="slider-container">
       <div class="label">Wind Speed</div>
       <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
       <div class="percentage-display" id="windDisplay">25mph</div>
+
     </div>
     <div class="slider-container">
       <div class="label">Cloud Coverage</div>
       <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="cloudDisplay">50%</div>
+
     </div>
     <div class="slider-container">
       <div class="label">Precipitation Chance</div>
       <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="rainDisplay">50%</div>
+
     </div>
     <div class="slider-container">
       <div class="label">Humidity</div>
       <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="humidityDisplay">50%</div>
+
     </div>
     <div class="slider-container">
       <div class="label">Full Moon</div>
       <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
       <div class="percentage-display" id="moonDisplay">50%</div>
+
     </div>
   `;
 
@@ -713,6 +838,18 @@ function setslidersImp() {
 }
 
 getSliderUnit();
+
+const weightsliders = document.querySelectorAll('.weightslider');
+
+weightsliders.forEach(slider => {
+  slider.addEventListener('input', function (event) {
+    const sliderId = event.target.id;
+    const display = document.getElementById(sliderId.replace('slider', 'value'));
+
+
+    display.textContent = `${event.target.value}`;
+  });
+});
 
 const sliders = document.querySelectorAll('.slider');
 

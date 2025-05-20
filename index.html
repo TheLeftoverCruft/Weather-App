@@ -8,8 +8,52 @@
     <title>Weather App</title>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
-  <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
+  <div id="sidebar" class="sidebar bar">
+    <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
+    <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
+    <div class="container">
+      <div class="slider-column">
+        <h2>Weighting</h2>
+        <div class="weightslider">
+          <label for="tempweightslider">Temp:</label>
+          <input type="range" id="tempweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="tempweightvalue">0</span>
+        </div>
+    
+        <div class="weightslider">
+          <label for="windweightslider">Wind:</label>
+          <input type="range" id="windweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="windweightvalue">0</span>
+        </div>
+    
+        <div class="weightslider">
+          <label for="cloudweightslider">Cloud:</label>
+          <input type="range" id="cloudweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="cloudweightvalue">0</span>
+        </div>
+    
+        <div class="weightslider">
+          <label for="rainweightslider">Precipitation:</label>
+          <input type="range" id="rainweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="rainweightvalue">0</span>
+        </div>
+    
+        <div class="weightslider">
+          <label for="humidweightslider">Humidity:</label>
+          <input type="range" id="humidityweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="humidweightvalue">0</span>
+        </div>
+    
+        <div class="weightslider">
+          <label for="moonweightslider">Moon:</label>
+          <input type="range" id="moonweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
+          <span id="moonweightvalue">0</span>
+        </div>
+      </div>
+    </div>
+    <h2 id="settings_title" class="bar_title" onclick="toggleBar('sidebar')">Settings</h2>
+  </div>
+
 
   <div id="weather" class="weather-animation-container sun-bg">
     <div class="sun"></div>
@@ -34,6 +78,7 @@
     <div class="top-row">
       <div id="currentWeather" class="weather-box">Current weather info will appear here.</div>
       <div id="fullMoonWeather" class="weather-box">Best Day weather info will appear here.</div>
+      
     </div>
     <div id="closestday" class="weather-box wide">Weather for the next 15 days will appear here</div>
   </div>

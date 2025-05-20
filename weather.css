@@ -74,6 +74,89 @@ input, button {
 .error {
   color: red;
 }
+ /* sidebar */
+ #sidebar {
+  position: fixed;
+  top: 0;
+  left: -25vh;
+  width: 25vh;
+  height: 100%;
+  background: #ffffff;
+  color: rgb(0, 0, 0);
+  transition: left 0.2s;
+  display: flex; /* Flexbox layout */
+  flex-direction: row; /* Horizontal layout */
+  align-items: center;
+  font-size: 3vh;
+ 
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#settings_title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  font-size: 3vh;
+  padding-right: 1vh;
+  background-color: #ffffff;
+  border-right: #000 solid;
+  border-radius: 2vh  0vh 0vh 2vh;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1vh;
+  margin: 0;
+  margin-left: 2vh;
+}
+
+.bar_title:hover {
+  cursor: pointer;
+}
+.bar {
+  z-index: 3;
+}
+
+
+.container {
+  margin-left: 2vh;
+  zoom: 60%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+label {
+  min-width: 100px;
+  text-align: right;
+  font-size: 1rem;
+}
+
+input[type="range"] {
+  width: 300px;
+}
+
+span {
+  min-width: 40px;
+  text-align: left;
+  font-weight: bold;
+}
 
   /* slider */
 
@@ -116,6 +199,28 @@ input, button {
     height: 200%;
     z-index: -1;
   }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  /* weights */
+  .weightingInput {
+    font-size: 3vh;
+    text-align: center;
+    width: 5vh;
+    border: 0.1vh solid #999;
+    padding: 0.1vh;
+  }
+
+
 
   /* Sun Mode */
   .sun-bg {
@@ -242,12 +347,12 @@ input, button {
   /* Button */
   .toggle-btn {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
+    top: 1vh;
+    left: 1vh;
+    padding: 0.6vh 1.2vh;
+    font-size: 2vh;
     background: #ffffffbb;
-    border: none;
+    border: solid #000000;
     border-radius: 8px;
     cursor: pointer;
     z-index: 10;
@@ -369,15 +474,7 @@ input, button {
   font-weight: bold;
 }
 
-  
-  /* Inputs */
-  input, button {
-    padding: 0.5rem;
-    font-size: 1rem;
-    margin: 0.5rem;
-    width: 100%;
-    max-width: 300px;
-  }
+
   
   /* Error */
   .error {
@@ -387,6 +484,8 @@ input, button {
   #top_part {
     padding-top: 15vh;
   }
+
+ 
   
 /* Sliders Wrapper */
 #sliders-wrapper {
@@ -434,6 +533,145 @@ input, button {
   font-weight: bold;
 }
 
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* weights */
+.weightingInput {
+  font-size: 3vh;
+  text-align: center;
+  width: 5vh;
+  border: 0.1vh solid #999;
+  padding: 0.1vh;
+}
+ /* sidebar */
+ #sidebar {
+  position: fixed;
+  top: 0;
+  left: -25vw;
+  width: 25vw;
+  height: 100%;
+  background: #ffffff;
+  color: rgb(0, 0, 0);
+  transition: left 0.2s;
+  display: flex; /* Flexbox layout */
+  flex-direction: row; /* Horizontal layout */
+  align-items: center;
+  font-size: 3vw;
+ 
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#settings_title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  font-size: 3vw;
+  padding-right: 1vw;
+  background-color: #ffffff;
+  border-right: #000 solid;
+  border-radius: 2vw  0vw 0vw 2vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1vw;
+  margin: 0;
+  margin-left: 2vw;
+}
+
+.bar_title:hover {
+  cursor: pointer;
+}
+.bar {
+  z-index: 3;
+}
+
+
+.container {
+  margin-left: 2vh;
+  zoom: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+label {
+  min-width: 100px;
+  text-align: right;
+  font-size: 1rem;
+}
+
+input[type="range"] {
+  width: 300px;
+}
+
+span {
+  min-width: 40px;
+  text-align: left;
+  font-weight: bold;
+}
+
+  /* Button */
+  .toggle-btn {
+    position: absolute;
+    top: 1vw;
+    left: 1vw;
+    padding: 1vw 2vw;
+    font-size: 2vw;
+    background: #ffffffbb;
+    border: solid #000000;
+    border-radius: 1vw;
+    cursor: pointer;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+  }
+
+  #change-unit {
+    top: 3vh;
+  }
+  
+  /* Bottom Text */
+  .bottom-text {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+  }
+
   
   /* Weather Animation */
   .weather-animation-container {
@@ -442,6 +680,8 @@ input, button {
     height: 200%;
     z-index: -1;
   }
+
+  
   
   /* Sun Mode */
   .sun-bg {
@@ -564,57 +804,9 @@ input, button {
     100% { left: 100%; }
   }
   
-  /* Button */
-  .toggle-btn {
-    position: fixed;
-    top: 0.5vh;
-    left: 1vh;
-    padding: 0vh 1vh;
-    font-size: 1em;
-    background: #ffffffbb;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 10;
-    backdrop-filter: blur(5px);
-  }
 
-  #change-unit {
-    top: 7vh;
-  }
-  
-  /* Bottom Text */
-  .bottom-text {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-align: center;
-    color: white;
-    opacity: 0.5;
-    z-index: 1;
-    pointer-events: none;
-  }
   
   
-  /* Optional: ultra-small screens */
-  @media (max-width: 350px) {
-    .weather-box, .weather-box.wide {
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-  
-    .label, .percentage-display {
-      font-size: 0.9rem;
-    }
-  
-    .toggle-btn {
-      font-size: 0.9em;
-      padding: 0.4em 0.8em;
-    }
-  }
+
   
   }
