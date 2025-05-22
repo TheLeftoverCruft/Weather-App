@@ -366,7 +366,10 @@ span {
   }
 
   #change-unit {
-    top: 10%;
+    top: 12vh;
+  }
+  #toggletime {
+    top: 22vh;
   }
 
   .bottom-text {

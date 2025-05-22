@@ -14,6 +14,13 @@
       <div class="slider-column">
         <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
         <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
+        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Toggle Time Slider</button>
+        <h2>Time</h2>
+        <div class="weightslider">
+        
+          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" disabled>
+          <div class="time-display">Selected Time: <span id="timeLabel">12:00</span></div>
+        </div>
         <h2>Weighting</h2>
         <div class="weightslider">
           <label for="tempweightslider">Temp:</label>
@@ -62,6 +69,13 @@
       <div class="slider-column">
         <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
         <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
+        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Toggle Time Slider</button>
+        <h2>Time</h2>
+        <div class="weightslider">
+
+          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" disabled>
+          <div class="time-display">Selected Time: <span id="timeLabel">12:00</span></div>
+        </div>
         <h2>Weighting</h2>
         <div class="weightslider">
           <label for="tempweightslider">Temp:</label>
