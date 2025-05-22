@@ -925,12 +925,15 @@ getSliderUnit();
 
 
 function updateTimeDisplay() {
+  const timeLabel = document.getElementById('timeLabel');
   const hour = parseInt(timeSlider.value);
   timeLabel.textContent = `${hour.toString().padStart(2, '0')}:00`;
 }
 
 function toggleSlider() {
+  const timeSlider = document.getElementById('timeSlider');
   timeSlider.disabled = !timeSlider.disabled;
+
 }
 
 // Initial update on load
