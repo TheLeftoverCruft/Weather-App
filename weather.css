@@ -670,6 +670,9 @@ input[type=number] {
   #change-unit {
     top: 15vh;
   }
+  #toggletime {
+    left: 18vh;
+  }
   
   /* Bottom Text */
   .bottom-text {

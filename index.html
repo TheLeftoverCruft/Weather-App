@@ -72,9 +72,11 @@
         <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Toggle Time Slider</button>
         <h2>Time</h2>
         <div class="weightslider">
-
+          <label for="tempweightslider">Time:</label>
           <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" disabled>
-          <div class="time-display">Selected Time: <span id="timeLabel">12:00</span></div>
+
+          <span id="timeLabel">12:00</span>
+          
         </div>
         <h2>Weighting</h2>
         <div class="weightslider">
