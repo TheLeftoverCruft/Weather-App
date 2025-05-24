@@ -1,7 +1,6 @@
 // side bar
 
-const timeSlider = document.getElementById('timeSlider');
-const timeLabel = document.getElementById('timeLabel');
+
 
 
 function toggleBar(idname) {
@@ -138,8 +137,24 @@ async function getWeather() {
   currentDiv.innerHTML = "Loading...";
   bestdayDiv.innerHTML = "Loading...";
   clostestdaydiv.innerHTML = "Loading...";
+  const sidebar = document.getElementById('sidebar');
+    const topbar = document.getElementById('topbar');
+    let timeSlider = document.getElementById('timeslider');
+    console.log(getComputedStyle(sidebar).display === "none")
+    let visiblebar= document.getElementById('sidebar');
 
 
+
+  if (getComputedStyle(sidebar).display === "none") {
+    
+    visiblebar= document.getElementById('topbar');
+
+    timeSlider = visiblebar.querySelector('#timeweightinput');
+  } else {
+    visiblebar= document.getElementById('sidebar');
+    timeSlider = visiblebar.querySelector('#timeSlider');
+  }
+    console.log("timelsider",timeSlider.value)
  
 
       
@@ -282,13 +297,28 @@ async function getWeather() {
             const preciprange  = parseInt((document.getElementById("rainSlider").max-document.getElementById("rainSlider").min));
             const humidrange  = parseInt((document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min));
               
-    
-            const moonweighting  = parseInt((document.getElementById("moonweightslider").value));
-            const tempweighting = parseInt((document.getElementById("tempweightslider").value));
-            const cloudweighting  = parseInt((document.getElementById("cloudweightslider").value));
-            const windweighting  = parseInt((document.getElementById("windweightslider").value));
-            const precipweighting  = parseInt((document.getElementById("rainweightslider").value));
-            const humidweighting  = parseInt((document.getElementById("humidityweightslider").value));
+            let moonweighting  = 0;
+            let tempweighting = 0;
+            let cloudweighting  = 0;
+            let windweighting  = 0;
+            let precipweighting  = 0;
+            let humidweighting  = 0;
+            if (getComputedStyle(sidebar).display === "none") {
+            moonweighting  = parseInt((visiblebar.querySelector("#moonweightinput").value));
+            tempweighting = parseInt((visiblebar.querySelector("#tempweightinput").value));
+            cloudweighting  = parseInt((visiblebar.querySelector("#cloudweightinput").value));
+            windweighting  = parseInt((visiblebar.querySelector("#windweightinput").value));
+            precipweighting  = parseInt((visiblebar.querySelector("#rainweightinput").value));
+            humidweighting  = parseInt((visiblebar.querySelector("#humidweightinput").value));
+            } else {
+            moonweighting  = parseInt((visiblebar.querySelector("#moonweightslider").value));
+            tempweighting = parseInt((visiblebar.querySelector("#tempweightslider").value));
+            cloudweighting  = parseInt((visiblebar.querySelector("#cloudweightslider").value));
+            windweighting  = parseInt((visiblebar.querySelector("#windweightslider").value));
+            precipweighting  = parseInt((visiblebar.querySelector("#rainweightslider").value));
+            humidweighting  = parseInt((visiblebar.querySelector("#humidityweightslider").value));
+            }
+
 
 
             const moonDaily = moonillumin.map(n => n*100)
@@ -430,9 +460,13 @@ async function getWeather() {
           else {
             for (let i=0; i<timeArray.length; i++) {
 
-            
-            
-            if (timeArray[i].split("T")[1]==(timeSlider.value+":00")) {
+
+            timeclock="";
+            if (timeSlider.value<10) {
+              timeclock="0"+timeSlider.value;
+            }
+            console.log("clock",timeclock+":00")
+            if (timeArray[i].split("T")[1]==(timeclock+":00")) {
             timedaily[dayinc]=timeArray[i];
             tempdaily[dayinc]=((temperatureArray[i]*(9/5)+(32))/24);
             winddaily[dayinc]=((windspeedArray[i]*0.621371)/24);
@@ -495,7 +529,7 @@ async function getWeather() {
           for (let i=0; i<timedaily.length; i++) {
             bar3output += `
               <tr>
-              <td>${timedaily[i].split("T")[0]} ${timedaily[i].split("T")[1]}</td>
+              <td>${(timedaily[i].split("T"))[0]} ${(timedaily[i].split("T"))[1]}</td>
               <td>${Math.round(moonillumin[i]*100)}%</td>
               <td>${Math.round(tempdaily[i])}°F</td>
               <td>${Math.round(winddaily[i])}mph</td>
@@ -674,13 +708,19 @@ async function getWeather() {
           <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
         `;
       } else {
-
+          console.log("input value",timeSlider.value)
 
                 for (let i=0; i<timeArray.length; i++) {
+
+                  
+            timeclock="";
+            if (timeSlider.value<10) {
+              timeclock="0"+timeSlider.value;
+            }
+            console.log("clock",timeclock+":00")
             
-            if (timeArray[i].split("T")[1]==(timeSlider.value+":00")) {
-              console.log("Hour",timeArray[i])
-              console.log("Wanted Hour",(timeSlider.value+":00"))
+            if (timeArray[i].split("T")[1]==(timeclock+":00")) {
+
 
             timedaily[dayinc]=timeArray[i];
             tempdaily[dayinc]=(temperatureArray[i]);
@@ -743,7 +783,7 @@ async function getWeather() {
           // console.log(humiddaily[0],humidreq,humidrange);
   
           //ouput to third bar
-          console.log(timedaily.length);
+          console.log(timedaily);
           bar3output = ""
           for (let i=0; i<timedaily.length; i++) {
             bar3output += `
@@ -920,24 +960,39 @@ function setslidersImp() {
 
 }
 
-getSliderUnit();
 
+getSliderUnit();
+const timeSlider = document.getElementById('timeSlider');
+const timeInput = document.getElementById('timeweightinput');
+const timeLabel = document.getElementById('timeLabel');
 
 
 function updateTimeDisplay() {
-  const timeLabel = document.getElementById('timeLabel');
+
   const hour = parseInt(timeSlider.value);
   timeLabel.textContent = `${hour.toString().padStart(2, '0')}:00`;
 }
 
 function toggleSlider() {
-  const timeSlider = document.getElementById('timeSlider');
-  timeSlider.disabled = !timeSlider.disabled;
+  const timeenablestatus = document.querySelectorAll('.timeenablestatus');
 
+  timeSlider.disabled = !timeSlider.disabled;
+  timeInput.disabled = !timeInput.disabled;
+  console.log(timeInput.disabled)
+  timeenablestatus.forEach(status => {
+    console.log(status)
+    if (timeInput.disabled) {
+    status.textContent = "Disabled";
+    } else {
+      status.textContent = "Enabled"
+    }
+    });
 }
 
+
+
 // Initial update on load
-updateTimeDisplay();
+
 
 const weightsliders = document.querySelectorAll('.weightslider');
 
@@ -950,6 +1005,49 @@ weightsliders.forEach(slider => {
     display.textContent = `${event.target.value}`;
   });
 });
+
+function changeValue(amount,buttonid) {
+
+  const display = buttonid.replace('counter-button', 'weightinput');
+  let counter= parseInt(document.getElementById(display).value);
+  
+
+  if (display=="timeweightinput") {
+    
+    if ((counter+amount)>=(0)&&(counter+amount)<=(23)) {
+        counter += amount;
+
+        updateDisplay(counter,display);
+    }
+  } else {
+        if ((counter+amount)>=(0)&&(counter+amount)<=(10)) {
+        counter += amount;
+
+        updateDisplay(counter,display);
+    }
+  }
+}
+
+function updateDisplay(counter,display) {
+
+  document.getElementById(display).value = counter;
+
+
+}
+
+function updateCounterFromInput(inputid) {
+  // const inputVal = parseInt(document.getElementById(inputid).value, 10);
+  
+  // if (!isNaN(inputVal)&&inputVal>3) {
+  //   counter = inputVal;
+  //   console.log("check1")
+  // } else {
+  //   counter = 1;
+  //   console.log("check2")
+  // }
+  // updateDisplay();
+}
+
 
 const sliders = document.querySelectorAll('.slider');
 

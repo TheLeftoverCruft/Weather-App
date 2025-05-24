@@ -12,14 +12,15 @@
     <div class="container">
 
       <div class="slider-column">
-        <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
+        <button class="toggle-btn" onclick="toggleWeather()">Change Weather</button>
         <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
-        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Toggle Time Slider</button>
+        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Turn on Time</button>
         <h2>Time</h2>
         <div class="weightslider">
         
-          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" disabled>
+          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" autocomplete="off" disabled>
           <div class="time-display">Selected Time: <span id="timeLabel">12:00</span></div>
+          <label for="tempweightslider" class="timeenablestatus">Disabled</label>
         </div>
         <h2>Weighting</h2>
         <div class="weightslider">
@@ -67,52 +68,73 @@
 
 
       <div class="slider-column">
-        <button class="toggle-btn" onclick="toggleWeather()">Toggle Weather</button>
+        <button class="toggle-btn" onclick="toggleWeather()">Change Weather</button>
         <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
-        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Toggle Time Slider</button>
+        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Turn on Time</button>
         <h2>Time</h2>
         <div class="weightslider">
-          <label for="tempweightslider">Time:</label>
-          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" >
-
-          <span id="timeLabel">12:00</span>
-          
+        <label for="windweightslider">Hours From Midnight</label>
+        <div class="counter-container">
+        <button class="counter-button" id="timecounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="timeweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off" disabled>
+        <button class="counter-button" id="timecounter-button" onclick="changeValue(1,this.id)">+</button>
         </div>
+        <label for="tempweightslider" class="timeenablestatus">Disabled</label>
+        </div>
+
         <h2>Weighting</h2>
         <div class="weightslider">
           <label for="tempweightslider">Temp:</label>
-          <input type="range" id="tempweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="tempweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="tempcounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="tempweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="tempcounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
     
         <div class="weightslider">
           <label for="windweightslider">Wind:</label>
-          <input type="range" id="windweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="windweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="windcounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="windweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="windcounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
     
         <div class="weightslider">
           <label for="cloudweightslider">Cloud:</label>
-          <input type="range" id="cloudweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="cloudweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="cloudcounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="cloudweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="cloudcounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
     
         <div class="weightslider">
           <label for="rainweightslider">Precipitation:</label>
-          <input type="range" id="rainweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="rainweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="raincounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="rainweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="raincounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
     
         <div class="weightslider">
           <label for="humidweightslider">Humidity:</label>
-          <input type="range" id="humidityweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="humidweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="humidcounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="humidweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="humidcounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
     
         <div class="weightslider">
           <label for="moonweightslider">Moon:</label>
-          <input type="range" id="moonweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="moonweightvalue">0</span>
+        <div class="counter-container">
+        <button class="counter-button" id="mooncounter-button" onclick="changeValue(-1,this.id)">-</button>
+        <input type="number" id="moonweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
+        <button class="counter-button" id="mooncounter-button" onclick="changeValue(1,this.id)">+</button>
+        </div>
         </div>
       </div>
     </div>

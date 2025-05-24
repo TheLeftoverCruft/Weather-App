@@ -620,28 +620,33 @@ input[type=number] {
   align-items: center;
 }
 
-.weightslider {
+.counter-container {
   display: flex;
+  flex-direction: row;       /* buttons go left and right of input */
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 1vh;
   width: 100%;
+  margin: 1vh 0;
 }
 
-.weightslider label {
-  min-width: 100px;
-  text-align: right;
-}
 
-.weightslider input[type="range"] {
-  width: 300px;
-}
 
-.weightslider span {
-  min-width: 40px;
-  text-align: left;
-  font-weight: bold;
-}
+  .counter-button {
+    padding: 1vh 2vh;
+    font-size: 2vh;
+    cursor: pointer;
+    border: 0.1vh solid #999;
+    margin-top: 0.1vh;
+  }
+
+  .counter-input {
+    font-size: 3vh;
+    text-align: center;
+    width: 5vh;
+    border: 0.1vh solid #999;
+    padding: 0.1vh;
+  }
 
 
 
@@ -673,6 +678,12 @@ input[type=number] {
   #toggletime {
     left: 18vh;
   }
+
+  input:disabled {
+  background-color: #eee;
+  color: #ffffff;
+
+}
   
   /* Bottom Text */
   .bottom-text {
