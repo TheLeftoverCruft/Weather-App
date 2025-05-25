@@ -461,12 +461,7 @@ async function getWeather() {
             for (let i=0; i<timeArray.length; i++) {
 
 
-            timeclock="";
-            if (timeSlider.value<10) {
-              timeclock="0"+timeSlider.value;
-            }
-            console.log("clock",timeclock+":00")
-            if (timeArray[i].split("T")[1]==(timeclock+":00")) {
+            if (timeArray[i].split("T")[1]==(timeSlider.value+":00")) {
             timedaily[dayinc]=timeArray[i];
             tempdaily[dayinc]=((temperatureArray[i]*(9/5)+(32))/24);
             winddaily[dayinc]=((windspeedArray[i]*0.621371)/24);
