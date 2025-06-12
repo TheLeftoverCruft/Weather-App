@@ -1,1082 +1,893 @@
-// side bar
+let tempcalbarchart = ""
+let windcalbarchart = ""
+let raincalbarchart = ""
+let humidcalbarchart = ""
+let cloudcalbarchart = ""
+let weatherData = []
+let totalcalc = []
+let dalyhumidoutput = Array(16).fill(0);
+let dalycloudoutput = Array(16).fill(0);
 
 
 
 
-function toggleBar(idname) {
-  var bar = document.getElementById(idname);
-
-  bar.classList.toggle("open");
-
+function openTab(tabId) {
+  const tabs = document.querySelectorAll('.tab');
+  const infos = document.querySelectorAll('.info');
+  tabs.forEach(tab => tab.classList.remove('active'));
+  infos.forEach(info => info.classList.remove('active'));
+  document.querySelector(`[onclick*="${tabId}"]`).classList.add('active');
+  document.getElementById(tabId).classList.add('active');
 }
 
-
- 
-
-  
-
-
-
-  function setCookie(name, value, days = 7) {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-  }
-  
-  // Get a cookie by name
-  function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let c of cookies) {
-      const [key, value] = c.trim().split('=');
-      if (key === name) return value;
-    }
-    return null;
-  }
-  
-  // Delete a cookie by name
-  function deleteCookie(name) {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  }
-  
-  // Rename a cookie (copy value and delete old one)
-  function renameCookie(oldName, newName) {
-    const value = getCookie(oldName);
-    if (value) {
-      setCookie(newName, value);
-      deleteCookie(oldName);
-    }
-  }
-  
-  // Button click handler
-  function setUnits() {
-    if (getCookie("imperial")) {
-      renameCookie("imperial", "scientific");
-    } else if (getCookie("scientific")) {
-      renameCookie("scientific", "imperial");
-    } else {
-      setCookie("imperial", "true");
-    }
-    location.reload();
-  }
-
-  function closestcalc(input,required,range,weighting,overallweighting) {
-
-
-     weighting+=1;
-
-    
-    required+=0.001;
-    output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
-  
-            // Create an array of [value, originalIndex] pairs
-    const indexed = output.map((value, index) => ({ value, index }));
-
-    // Sort by value (ascending)
-    indexed.sort((a, b) => b.value - a.value);
-
-    // Create an array to hold the ranks
-    const ranks = new Array(input.length);
-
-    // Assign ranks based on sorted order
-    for (let rank = 0; rank < indexed.length; rank++) {
-        ranks[indexed[rank].index] = (rank + 1)**(weighting*0.5) ;
-    }
-
-    return ranks;
-
-    // if (weighting<=0) {
-    //   weighting=1;
-    // }
-    
-    // required+=0.001;
-
-  
-
-
-    // output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
-    // // output = input.map(n => (Math.abs(required-n)/(required)));
-    // weighted = output.map(n => (1/n)/(overallweighting/weighting));
-    // return (output)
-    
-
-    
-  }
-
-  function closestcalc4temp(input,required,range,weighting,overallweighting) {
-    if (weighting<=0) {
-      weighting=1;
-    }
-    required+=0.001;
-    output = input.map(n => Math.round(((Math.abs(required-n)/(required+n)))*1000000)/1000000);
-    weighted = output.map(n => (1/n)/(overallweighting/weighting));
-    return (output)
-    
-  }
-
-// search
-
-function getSliderUnit() {
-  if (getCookie("imperial")) {
-
-    setslidersImp()
-  } else if (getCookie("scientific")) {
-
-    setslidersSci()
-  } else {
-
-    setslidersSci()
-  }
-}
-
-async function getWeather() { 
+async function getWeather() {
   const location = document.getElementById("locationInput").value;
   const currentDiv = document.getElementById("currentWeather");
-  const bestdayDiv = document.getElementById("fullMoonWeather");
-  const clostestdaydiv = document.getElementById("closestday");
+  const firstmornDiv = document.getElementById("currentmorning");
+  const firstnightDiv = document.getElementById("currentnight");
+  const secmornDiv = document.getElementById("tomorrowmorning");
+  const locationtitle = document.getElementById("location");
   const errorMsg = document.getElementById("errorMsg");
   errorMsg.textContent = "";
   currentDiv.innerHTML = "Loading...";
-  bestdayDiv.innerHTML = "Loading...";
-  clostestdaydiv.innerHTML = "Loading...";
-  const sidebar = document.getElementById('sidebar');
-    const topbar = document.getElementById('topbar');
-    let timeSlider = document.getElementById('timeslider');
-    console.log(getComputedStyle(sidebar).display === "none")
-    let visiblebar= document.getElementById('sidebar');
+  locationtitle.innerHTML = "";
 
 
 
-  if (getComputedStyle(sidebar).display === "none") {
-    
-    visiblebar= document.getElementById('topbar');
+  try {
+    // gets latitude and longitude sand name
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
+    const geoData = await geoRes.json();
 
-    timeSlider = visiblebar.querySelector('#timeweightinput');
-  } else {
-    visiblebar= document.getElementById('sidebar');
-    timeSlider = visiblebar.querySelector('#timeSlider');
-  }
-    console.log("timelsider",timeSlider.value)
- 
 
-      
-      try {
-        // gets latitude and longitude sand name
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
-        const geoData = await geoRes.json();
-    
-  
-        if (!geoData.results || geoData.results.length === 0) {
-          errorMsg.textContent = "Location not found.";
-          currentDiv.innerHTML = "";
-          bestdayDiv.innerHTML = "";
-          return;
-        }
-  
-        const { latitude, longitude, name, country } = geoData.results[0];
-  
-        // gets current weather from lat and long data
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=cloudcover,precipitation_probability,relativehumidity_2m&timezone=auto`);
-        const weatherData = await weatherRes.json();
-        const weather = weatherData.current_weather;
-  
-        let cloudCover = "Unavailable";
-        let precipitation = "Unavailable";
-        let humidity = "Unavailable";
-  
-        if (weatherData.hourly && weatherData.hourly.time) {
-          const now = new Date(weather.time);
-          const index = weatherData.hourly.time.findIndex(t => {
-            const time = new Date(t);
-            return time.getHours() === now.getHours() && time.getDate() === now.getDate();
-          });
-          if (index !== -1) {
-            cloudCover = weatherData.hourly.cloudcover?.[index] ?? cloudCover;
-            precipitation = weatherData.hourly.precipitation_probability?.[index] ?? precipitation_probability;
-            humidity = weatherData.hourly.relativehumidity_2m?.[index] ?? humidity;
-          }
-        }
-  
-        // Current moon phase
-        const today = new Date();
-        const timestamp = Math.floor(today.setHours(12, 0, 0, 0) / 1000);
-        const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
-        const moonData = await moonRes.json();
-  
-        let moonPhase = "Unavailable";
-        let moonIcon = "";
-        const mooniconMap = {
-          "New Moon": "🌑",
-          "Waxing Crescent": "🌒",
-          "1st Quarter": "🌓",
-          "Waxing Gibbous": "🌔",
-          "Full Moon": "🌕",
-          "Waning Gibbous": "🌖",
-          "3rd Quarter": "🌗",
-          "Waning Crescent": "🌘"
-        };
-        if (moonData && moonData[0] && moonData[0].Phase) {
-          moonPhase = moonData[0].Phase;
-          moonIcon = mooniconMap[moonPhase] || "";
-        }
-  
-        // block for current temp in that city
-        currentDiv.innerHTML = `
-          <h2>Current Weather in ${name}, ${country}</h2>
-          <p><strong>Temperature:</strong> ${Math.round((weather.temperature)*(9/5)+(32))}°C</p>
-          <p><strong>Windspeed:</strong> ${Math.round((weather.windspeed)*0.621371*100)/100} km/h</p>
-          <p><strong>Cloud Coverage:</strong> ${cloudCover}%</p>
-          <p><strong>Precipitation:</strong> ${precipitation} %</p>
-          <p><strong>Humidity:</strong> ${humidity}%</p>
-          <p><strong>Moon Phase:</strong> ${moonIcon} ${moonPhase}</p>
-          <p><em>Last Updated:</em> ${weather.time}</p>
-        `;
-   
-  
-        // thrid tab
-  
-        try {
-      
-          let moonillumin = [];
-          let moonphase = [];
-          for (let i = 0; i < 16; i++) {
-            const checkDate = new Date(Date.now() + i * 86400000);
-            const timestamp = Math.floor(checkDate.setHours(12, 0, 0, 0) / 1000);
-            const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
-            const moonData = await moonRes.json();
-           
-            if (moonData[0]) {
-              moonillumin[i]=moonData[0].Illumination;
-              moonphase[i]=moonData[0].Phase;
-              
-              // moonillumin += '<tr><th>'+timestamp+'</th><th>'+(Math.round((((Math.abs(moonilluminreq-moonData[0].Illumination))/moonilluminreq)**2)*100)/100)+'</th></tr>' ;
-              
-            }
-          }
-      
-      
-          // gets the open meteo api
-      
-  
-          const today = new Date();
-          const endDate = new Date();
-          endDate.setDate(today.getDate() + 15); // 16 days
-      
-          const formatDate = date => date.toISOString().split('T')[0];
-          const start_date = formatDate(today);
-          const end_date = formatDate(endDate);
-      
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,wind_speed_10m,cloudcover,precipitation_probability,relative_humidity_2m&timezone=auto&start_date=${start_date}&end_date=${end_date}`;
-      
-          try {
-            const response = await fetch(url);
-            const data = await response.json();
-      
-            if (!data.hourly) {
-              console.error("No hourly data returned:", data);
-              return;
-            }
-      
-      
-            const timeArray = data.hourly.time;
-            const temperatureArray = data.hourly.temperature_2m;
-            const windspeedArray = data.hourly.wind_speed_10m;
-            const cloudcoverArray = data.hourly.cloudcover;
-            const precipitationChanceArray = data.hourly.precipitation_probability;
-            const humidityArray = data.hourly.relative_humidity_2m;
-        
-            const moonreq  = parseInt((document.getElementById("moonSlider").value));
-            const tempreq  = parseInt((document.getElementById("tempSlider").value));
-            const cloudreq  = parseInt((document.getElementById("cloudSlider").value));
-            const windreq  = parseInt((document.getElementById("windSlider").value));
-            const precipreq  = parseInt((document.getElementById("rainSlider").value));
-            const humidreq  = parseInt((document.getElementById("humiditySlider").value));
-    
-            const moonrange  = parseInt((document.getElementById("moonSlider").max-document.getElementById("moonSlider").min));
-            const temprange = parseInt((document.getElementById("tempSlider").max-document.getElementById("tempSlider").min));
-            const cloudrange  = parseInt((document.getElementById("cloudSlider").max-document.getElementById("cloudSlider").min));
-            const windrange  = parseInt((document.getElementById("windSlider").max-document.getElementById("windSlider").min));
-            const preciprange  = parseInt((document.getElementById("rainSlider").max-document.getElementById("rainSlider").min));
-            const humidrange  = parseInt((document.getElementById("humiditySlider").max-document.getElementById("humiditySlider").min));
-              
-            let moonweighting  = 0;
-            let tempweighting = 0;
-            let cloudweighting  = 0;
-            let windweighting  = 0;
-            let precipweighting  = 0;
-            let humidweighting  = 0;
-            if (getComputedStyle(sidebar).display === "none") {
-            moonweighting  = parseInt((visiblebar.querySelector("#moonweightinput").value));
-            tempweighting = parseInt((visiblebar.querySelector("#tempweightinput").value));
-            cloudweighting  = parseInt((visiblebar.querySelector("#cloudweightinput").value));
-            windweighting  = parseInt((visiblebar.querySelector("#windweightinput").value));
-            precipweighting  = parseInt((visiblebar.querySelector("#rainweightinput").value));
-            humidweighting  = parseInt((visiblebar.querySelector("#humidweightinput").value));
-            } else {
-            moonweighting  = parseInt((visiblebar.querySelector("#moonweightslider").value));
-            tempweighting = parseInt((visiblebar.querySelector("#tempweightslider").value));
-            cloudweighting  = parseInt((visiblebar.querySelector("#cloudweightslider").value));
-            windweighting  = parseInt((visiblebar.querySelector("#windweightslider").value));
-            precipweighting  = parseInt((visiblebar.querySelector("#rainweightslider").value));
-            humidweighting  = parseInt((visiblebar.querySelector("#humidityweightslider").value));
-            }
+    if (!geoData.results || geoData.results.length === 0) {
+      errorMsg.textContent = "Location not found.";
+      currentDiv.innerHTML = "";
+
+      return;
+    }
+
+    const today = new Date();
+    const endDate = new Date();
+    endDate.setDate(today.getDate() + 15); // 16 days
+
+    const formatDate = date => date.toISOString().split('T')[0];
+    const start_date = formatDate(today);
+    const end_date = formatDate(endDate);
+
+    const { latitude, longitude, name, country } = geoData.results[0];
+
+    const weatherlocationfetch = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}`;
+    const current_weather_fetch = `&current_weather=true`;
+    const hourly_fetch = `&hourly=temperature_2m,wind_speed_10m,cloudcover,precipitation_probability,relative_humidity_2m`;
+    const daily_fetch = `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max`;
+    const time_fetch = `&timezone=auto&start_date=${start_date}&end_date=${end_date}`;
 
 
 
-            const moonDaily = moonillumin.map(n => n*100)
-            const timedaily = Array(16).fill(0);
-            const tempdaily = Array(16).fill(0);
-            const winddaily = Array(16).fill(0);
-            const clouddaily = Array(16).fill(0);
-            const precipdaily = Array(16).fill(0);
-            const humiddaily = Array(16).fill(0);
-    
+    // gets current weather from lat and long data
+    const weatherRes = await fetch((weatherlocationfetch + current_weather_fetch + hourly_fetch + daily_fetch + time_fetch));
 
-            dayinc=0;
-          
-            if (getCookie("imperial")) {
-              if (timeSlider.disabled) {
-          timedaily[0]=timeArray[0].split("T")[0];
-          for (let i=0; i<timeArray.length; i++) {
+    weatherData = await weatherRes.json();
+    const weather = weatherData.current_weather;
 
-            if (timeArray[i].split("T")[0]!=timedaily[dayinc]) {
-              dayinc++;
-              
+    let cloudCover = "Unavailable";
+    let precipitation = "Unavailable";
+    let humidity = "Unavailable";
 
-              
-            }
-
-
-            timedaily[dayinc]=timeArray[i].split("T")[0];
-            tempdaily[dayinc]+=((temperatureArray[i]*(9/5)+(32))/24);
-            winddaily[dayinc]+=((windspeedArray[i]*0.621371)/24);
-            clouddaily[dayinc]+=(cloudcoverArray[i]/24);
-            precipdaily[dayinc]+=(precipitationChanceArray[i]/24);
-            humiddaily[dayinc]+=(humidityArray[i]/24);
-
-          }
-          const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
-      
-      
-          const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
-          const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
-          const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
-          const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
-          const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
-          const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
-
-          console.log("overallweighting",overallweighting);
-          console.log("humiddaily",humiddaily);
-          console.log("humidreq",humidreq);
-          console.log("humidweighting",humidweighting);
-          console.log("humidrane",humidrange);
-          console.log("humid",humid);
-          console.log("tempdaily",tempdaily);
-          console.log("tempreq",tempreq);
-          console.log("tempweighting",tempweighting);
-          console.log("temprane",temprange);
-          console.log("temp",temp);
-          console.log("moondaily",moonDaily);
-          console.log("moonreq",moonreq);
-          console.log("moonweighting",moonweighting);
-          console.log("moonrane",moonrange);
-          console.log("moon",moon);
-          console.log("winddaily",winddaily);
-          console.log("windreq",windreq);
-          console.log("windweighting",windweighting);
-          console.log("windrane",windrange);
-          console.log("wind",wind);
-  
-          const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
-          console.log(dayclosestcalc);
-          const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
-          
-          console.log(timedaily[closestdayindex],timedaily);
-  
-          // console.log(moonillumin[0],moonreq,moonrange);
-          // console.log(tempdaily[0],tempreq,temprange);
-          // console.log(winddaily[0],windreq,windrange);
-          // console.log(clouddaily[0],cloudreq,cloudrange);
-          // console.log(precipdaily[0],precipreq,preciprange);
-          // console.log(humiddaily[0],humidreq,humidrange);
-  
-          //ouput to third bar
-          console.log(timedaily.length);
-          bar3output = ""
-          for (let i=0; i<timedaily.length; i++) {
-            bar3output += `
-              <tr>
-              <td>${timedaily[i]}</td>
-              <td>${Math.round(moonillumin[i]*100)}%</td>
-              <td>${Math.round(tempdaily[i])}°F</td>
-              <td>${Math.round(winddaily[i])}mph</td>
-              <td>${Math.round(clouddaily[i])}%</td>
-              <td>${Math.round(precipdaily[i])}%</td>
-              <td>${Math.round(humiddaily[i])}%</td>
-              </tr>
-            `
-  
-            
-            ;
-          }
-      
-          clostestdaydiv.innerHTML = `
-          
-      
-          <h2><strong>Weather for the next 15 days in ${name}, ${country}:</strong> </h2>
-          <table>
-          <tr>
-          <th>Time</th>
-          <th>Moon</th>
-          <th>Temp</th>
-          <th>Wind</th>
-          <th>Cloud</th>
-          <th>Rain</th>
-          <th>Humid</th>
-          </tr>
-          ${bar3output}</table>
-        `;
-          // bestdayDiv.innerHTML = `
-          //   <h2>Weather in ${name}, ${country}</h2>
-          //   <p><strong>Date:</strong> ${fullMoonDate.toDateString()} (Midnight)</p>
-          //   <p><strong>Temperature:</strong> ${temp}°C</p>
-          //   <p><strong>Wind Speed:</strong> ${windspeed10m}km/h</p>
-          //   <p><strong>Cloud Coverage:</strong> ${cloud}%</p>
-          //   <p><strong>Precipitation:</strong> ${precip} %</p>
-          //   <p><strong>Humidity:</strong> ${humid}%</p>
-          //   <p><strong>Moon Phase:</strong> 🌕 Full Moon</p>
-          // `;
-        //second tab
-  
-        bestdayDiv.innerHTML = `
-          <h2>Best Day in ${name}, ${country}</h2>
-          <p><strong>Date:</strong> ${timedaily[closestdayindex]}</p>
-          <p><strong>Temperature:</strong> ${Math.round(tempdaily[closestdayindex])}°F</p>
-          <p><strong>Wind Speed:</strong> ${Math.round(winddaily[closestdayindex])}mph</p>
-          <p><strong>Cloud Coverage:</strong> ${Math.round(clouddaily[closestdayindex])}%</p>
-          <p><strong>Precipitation:</strong> ${Math.round(precipdaily[closestdayindex])} %</p>
-          <p><strong>Humidity:</strong> ${Math.round(humiddaily[closestdayindex])}%</p>
-          <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
-        `;
-          }
-          else {
-            for (let i=0; i<timeArray.length; i++) {
-
-
-            if (timeArray[i].split("T")[1]==(timeSlider.value+":00")) {
-            timedaily[dayinc]=timeArray[i];
-            tempdaily[dayinc]=((temperatureArray[i]*(9/5)+(32))/24);
-            winddaily[dayinc]=((windspeedArray[i]*0.621371)/24);
-            clouddaily[dayinc]=(cloudcoverArray[i]/24);
-            precipdaily[dayinc]=(precipitationChanceArray[i]/24);
-            humiddaily[dayinc]=(humidityArray[i]/24);
-              dayinc++;
-              
-            }
-            
-          }
-          const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
-      
-      
-          const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
-          const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
-          const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
-          const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
-          const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
-          const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
-
-          console.log("overallweighting",overallweighting);
-          console.log("humiddaily",humiddaily);
-          console.log("humidreq",humidreq);
-          console.log("humidweighting",humidweighting);
-          console.log("humidrane",humidrange);
-          console.log("humid",humid);
-          console.log("tempdaily",tempdaily);
-          console.log("tempreq",tempreq);
-          console.log("tempweighting",tempweighting);
-          console.log("temprane",temprange);
-          console.log("temp",temp);
-          console.log("moondaily",moonDaily);
-          console.log("moonreq",moonreq);
-          console.log("moonweighting",moonweighting);
-          console.log("moonrane",moonrange);
-          console.log("moon",moon);
-          console.log("winddaily",winddaily);
-          console.log("windreq",windreq);
-          console.log("windweighting",windweighting);
-          console.log("windrane",windrange);
-          console.log("wind",wind);
-  
-          const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
-          console.log(dayclosestcalc);
-          const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
-          
-          console.log(timedaily[closestdayindex],timedaily);
-  
-          // console.log(moonillumin[0],moonreq,moonrange);
-          // console.log(tempdaily[0],tempreq,temprange);
-          // console.log(winddaily[0],windreq,windrange);
-          // console.log(clouddaily[0],cloudreq,cloudrange);
-          // console.log(precipdaily[0],precipreq,preciprange);
-          // console.log(humiddaily[0],humidreq,humidrange);
-  
-          //ouput to third bar
-          console.log(timedaily.length);
-          bar3output = ""
-          for (let i=0; i<timedaily.length; i++) {
-            bar3output += `
-              <tr>
-              <td>${(timedaily[i].split("T"))[0]} ${(timedaily[i].split("T"))[1]}</td>
-              <td>${Math.round(moonillumin[i]*100)}%</td>
-              <td>${Math.round(tempdaily[i])}°F</td>
-              <td>${Math.round(winddaily[i])}mph</td>
-              <td>${Math.round(clouddaily[i])}%</td>
-              <td>${Math.round(precipdaily[i])}%</td>
-              <td>${Math.round(humiddaily[i])}%</td>
-              </tr>
-            `
-  
-            
-            ;
-          }
-      
-          clostestdaydiv.innerHTML = `
-          
-      
-          <h2><strong>Weather for the next 15 days in ${name}, ${country}:</strong> </h2>
-          <table>
-          <tr>
-          <th>Time</th>
-          <th>Moon</th>
-          <th>Temp</th>
-          <th>Wind</th>
-          <th>Cloud</th>
-          <th>Rain</th>
-          <th>Humid</th>
-          </tr>
-          ${bar3output}</table>
-        `;
-          // bestdayDiv.innerHTML = `
-          //   <h2>Weather in ${name}, ${country}</h2>
-          //   <p><strong>Date:</strong> ${fullMoonDate.toDateString()} (Midnight)</p>
-          //   <p><strong>Temperature:</strong> ${temp}°C</p>
-          //   <p><strong>Wind Speed:</strong> ${windspeed10m}km/h</p>
-          //   <p><strong>Cloud Coverage:</strong> ${cloud}%</p>
-          //   <p><strong>Precipitation:</strong> ${precip} %</p>
-          //   <p><strong>Humidity:</strong> ${humid}%</p>
-          //   <p><strong>Moon Phase:</strong> 🌕 Full Moon</p>
-          // `;
-        //second tab
-  
-        bestdayDiv.innerHTML = `
-          <h2>Best Day in ${name}, ${country}</h2>
-          <p><strong>Date:</strong> ${timedaily[closestdayindex].split("T")[0]}<strong> Time: </strong>${timedaily[closestdayindex].split("T")[1]}</p>
-          <p><strong>Temperature:</strong> ${Math.round(tempdaily[closestdayindex])}°F</p>
-          <p><strong>Wind Speed:</strong> ${Math.round(winddaily[closestdayindex])}mph</p>
-          <p><strong>Cloud Coverage:</strong> ${Math.round(clouddaily[closestdayindex])}%</p>
-          <p><strong>Precipitation:</strong> ${Math.round(precipdaily[closestdayindex])} %</p>
-          <p><strong>Humidity:</strong> ${Math.round(humiddaily[closestdayindex])}%</p>
-          <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
-        `;
-          }
-      } else {
-        if (timeSlider.disabled) {
-        timedaily[0]=timeArray[0].split("T")[0];
-        for (let i=0; i<timeArray.length; i++) {
-            
-            if (timeArray[i].split("T")[0]!=timedaily[dayinc]) {
-              dayinc++;
-              
-            }
-            
-  
-            timedaily[dayinc]=timeArray[i].split("T")[0];
-            tempdaily[dayinc]+=(temperatureArray[i]/24);
-            winddaily[dayinc]+=(windspeedArray[i]/24);
-            clouddaily[dayinc]+=((cloudcoverArray[i]/24));
-            precipdaily[dayinc]+=(precipitationChanceArray[i]/24);
-            humiddaily[dayinc]+=((humidityArray[i]/24));
-
-
-          }
-
-          const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
-      
-          const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
-          const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
-          const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
-          const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
-          const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
-          const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
-
-
-          console.log("overallweighting",overallweighting);
-          console.log("humiddaily",humiddaily);
-          console.log("humidreq",humidreq);
-          console.log("humidweighting",humidweighting);
-          console.log("humidrane",humidrange);
-          console.log("humid",humid);
-          console.log("tempdaily",tempdaily);
-          console.log("tempreq",tempreq);
-          console.log("tempweighting",tempweighting);
-          console.log("temprane",temprange);
-          console.log("temp",temp);
-          console.log("moondaily",moonDaily);
-          console.log("moonreq",moonreq);
-          console.log("moonweighting",moonweighting);
-          console.log("moonrane",moonrange);
-          console.log("moon",moon);
-          console.log("winddaily",winddaily);
-          console.log("windreq",windreq);
-          console.log("windweighting",windweighting);
-          console.log("windrane",windrange);
-          console.log("wind",wind);
-  
-          // const dayclosestcalc = moon.map((value, index) => (value/6) + (temp[index]/6) + (wind[index]/6) + (cloud[index]/6) + (precip[index]/6) + (humid[index]/6));
-          const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
-          console.log(dayclosestcalc);
-          const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
-          
-          console.log(timedaily[closestdayindex],timedaily);
-  
-          // console.log(moonillumin[0],moonreq,moonrange);
-          // console.log(tempdaily[0],tempreq,temprange);
-          // console.log(winddaily[0],windreq,windrange);
-          // console.log(clouddaily[0],cloudreq,cloudrange);
-          // console.log(precipdaily[0],precipreq,preciprange);
-          // console.log(humiddaily[0],humidreq,humidrange);
-  
-          //ouput to third bar
-          console.log(timedaily.length);
-          bar3output = ""
-          for (let i=0; i<timedaily.length; i++) {
-            bar3output += `
-              <tr>
-              <td>${timedaily[i]}</td>
-              <td>${Math.round(moonillumin[i]*100)}%</td>
-              <td>${Math.round(tempdaily[i])}°C</td>
-              <td>${Math.round(winddaily[i])}km/h</td>
-              <td>${Math.round(clouddaily[i])}%</td>
-              <td>${Math.round(precipdaily[i])}%</td>
-              <td>${Math.round(humiddaily[i])}%</td>
-              </tr>
-            `
-  
-            
-            ;
-          }
-      
-          clostestdaydiv.innerHTML = `
-          
-      
-          <h2><strong>Weather for the next 15 days in ${name}, ${country}:</strong> </h2>
-          <table>
-          <tr>
-          <th>Time</th>
-          <th>Moon</th>
-          <th>Temp</th>
-          <th>Wind</th>
-          <th>Cloud</th>
-          <th>Rain</th>
-          <th>Humid</th>
-          </tr>
-          ${bar3output}</table>
-        `;
-          // bestdayDiv.innerHTML = `
-          //   <h2>Weather in ${name}, ${country}</h2>
-          //   <p><strong>Date:</strong> ${fullMoonDate.toDateString()} (Midnight)</p>
-          //   <p><strong>Temperature:</strong> ${temp}°C</p>
-          //   <p><strong>Wind Speed:</strong> ${windspeed10m}km/h</p>
-          //   <p><strong>Cloud Coverage:</strong> ${cloud}%</p>
-          //   <p><strong>Precipitation:</strong> ${precip} %</p>
-          //   <p><strong>Humidity:</strong> ${humid}%</p>
-          //   <p><strong>Moon Phase:</strong> 🌕 Full Moon</p>
-          // `;
-        //second tab
-  
-        bestdayDiv.innerHTML = `
-          <h2>Best Day in ${name}, ${country}</h2>
-          <p><strong>Date:</strong> ${timedaily[closestdayindex]}</p>
-          <p><strong>Temperature:</strong> ${Math.round(tempdaily[closestdayindex])}°C</p>
-          <p><strong>Wind Speed:</strong> ${Math.round(winddaily[closestdayindex])}km/h</p>
-          <p><strong>Cloud Coverage:</strong> ${Math.round(clouddaily[closestdayindex])}%</p>
-          <p><strong>Precipitation:</strong> ${Math.round(precipdaily[closestdayindex])} %</p>
-          <p><strong>Humidity:</strong> ${Math.round(humiddaily[closestdayindex])}%</p>
-          <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
-        `;
-      } else {
-          console.log("input value",timeSlider.value)
-
-                for (let i=0; i<timeArray.length; i++) {
-
-                  
-
-            
-            if (timeArray[i].split("T")[1]==(timeSlider.value+":00")) {
-
-
-            timedaily[dayinc]=timeArray[i];
-            tempdaily[dayinc]=(temperatureArray[i]);
-            winddaily[dayinc]=(windspeedArray[i]);
-            clouddaily[dayinc]=((cloudcoverArray[i]));
-            precipdaily[dayinc]=(precipitationChanceArray[i]);
-            humiddaily[dayinc]=((humidityArray[i]));
-            dayinc++;
-              
-            }
-            
-  
-
-          }
-
-          const overallweighting=moonweighting*tempweighting*cloudweighting*windweighting*precipweighting*humidweighting;
-      
-          const moon= closestcalc(moonDaily,moonreq,moonrange,moonweighting,overallweighting);
-          const temp = closestcalc(tempdaily,tempreq,temprange,tempweighting,overallweighting);
-          const wind = closestcalc(winddaily,windreq,windrange,windweighting,overallweighting);
-          const cloud = closestcalc(clouddaily,cloudreq,cloudrange, cloudweighting,overallweighting);
-          const precip = closestcalc(precipdaily,precipreq,preciprange,precipweighting,overallweighting);
-          const humid = closestcalc(humiddaily,humidreq,humidrange,humidweighting,overallweighting);
-
-
-          // console.log("overallweighting",overallweighting);
-          // console.log("humiddaily",humiddaily);
-          // console.log("humidreq",humidreq);
-          // console.log("humidweighting",humidweighting);
-          // console.log("humidrane",humidrange);
-          // console.log("humid",humid);
-          // console.log("tempdaily",tempdaily);
-          // console.log("tempreq",tempreq);
-          // console.log("tempweighting",tempweighting);
-          // console.log("temprane",temprange);
-          // console.log("temp",temp);
-          // console.log("moondaily",moonDaily);
-          // console.log("moonreq",moonreq);
-          // console.log("moonweighting",moonweighting);
-          // console.log("moonrane",moonrange);
-          // console.log("moon",moon);
-          // console.log("winddaily",winddaily);
-          // console.log("windreq",windreq);
-          // console.log("windweighting",windweighting);
-          // console.log("windrane",windrange);
-          // console.log("wind",wind);
-  
-          // const dayclosestcalc = moon.map((value, index) => (value/6) + (temp[index]/6) + (wind[index]/6) + (cloud[index]/6) + (precip[index]/6) + (humid[index]/6));
-          const dayclosestcalc = moon.map((value, index) => value + temp[index] + wind[index] + cloud[index] + precip[index] + humid[index]);
-          console.log(dayclosestcalc);
-          const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
-          
-          console.log(timedaily[closestdayindex],timedaily);
-  
-          // console.log(moonillumin[0],moonreq,moonrange);
-          // console.log(tempdaily[0],tempreq,temprange);
-          // console.log(winddaily[0],windreq,windrange);
-          // console.log(clouddaily[0],cloudreq,cloudrange);
-          // console.log(precipdaily[0],precipreq,preciprange);
-          // console.log(humiddaily[0],humidreq,humidrange);
-  
-          //ouput to third bar
-          console.log(timedaily);
-          bar3output = ""
-          for (let i=0; i<timedaily.length; i++) {
-            bar3output += `
-              <tr>
-              <td>${timedaily[i].split("T")[0]} ${timedaily[i].split("T")[1]}</td>
-              <td>${Math.round(moonillumin[i]*100)}%</td>
-              <td>${Math.round(tempdaily[i])}°C</td>
-              <td>${Math.round(winddaily[i])}km/h</td>
-              <td>${Math.round(clouddaily[i])}%</td>
-              <td>${Math.round(precipdaily[i])}%</td>
-              <td>${Math.round(humiddaily[i])}%</td>
-              </tr>
-            `
-  
-            
-            ;
-          }
-      
-          clostestdaydiv.innerHTML = `
-          
-      
-          <h2><strong>Weather for the next 15 days in ${name}, ${country}:</strong> </h2>
-          <table>
-          <tr>
-          <th>Time</th>
-          <th>Moon</th>
-          <th>Temp</th>
-          <th>Wind</th>
-          <th>Cloud</th>
-          <th>Rain</th>
-          <th>Humid</th>
-          </tr>
-          ${bar3output}</table>
-        `;
-          // bestdayDiv.innerHTML = `
-          //   <h2>Weather in ${name}, ${country}</h2>
-          //   <p><strong>Date:</strong> ${fullMoonDate.toDateString()} (Midnight)</p>
-          //   <p><strong>Temperature:</strong> ${temp}°C</p>
-          //   <p><strong>Wind Speed:</strong> ${windspeed10m}km/h</p>
-          //   <p><strong>Cloud Coverage:</strong> ${cloud}%</p>
-          //   <p><strong>Precipitation:</strong> ${precip} %</p>
-          //   <p><strong>Humidity:</strong> ${humid}%</p>
-          //   <p><strong>Moon Phase:</strong> 🌕 Full Moon</p>
-          // `;
-        //second tab
-  
-        bestdayDiv.innerHTML = `
-          <h2>Best Day in ${name}, ${country}</h2>
-          <p><strong>Date:</strong> ${timedaily[closestdayindex].split("T")[0]}<strong> Time: </strong>${timedaily[closestdayindex].split("T")[1]}</p>
-          <p><strong>Temperature:</strong> ${Math.round(tempdaily[closestdayindex])}°C</p>
-          <p><strong>Wind Speed:</strong> ${Math.round(winddaily[closestdayindex])}km/h</p>
-          <p><strong>Cloud Coverage:</strong> ${Math.round(clouddaily[closestdayindex])}%</p>
-          <p><strong>Precipitation:</strong> ${Math.round(precipdaily[closestdayindex])} %</p>
-          <p><strong>Humidity:</strong> ${Math.round(humiddaily[closestdayindex])}%</p>
-          <p><strong>Moon Phase:</strong> ${mooniconMap[moonphase[closestdayindex]]} ${moonphase[closestdayindex]}</p>
-        `;
-      }} 
-  
-  
-      } catch (error) {
-        errorMsg.textContent = "Failed to load data.";
-        currentDiv.innerHTML = "";
-        bestdayDiv.innerHTML = "";
-        console.error(error);
+    if (weatherData.hourly && weatherData.hourly.time) {
+      const now = new Date(weather.time);
+      const index = weatherData.hourly.time.findIndex(t => {
+        const time = new Date(t);
+        return time.getHours() === now.getHours() && time.getDate() === now.getDate();
+      });
+      if (index !== -1) {
+        cloudCover = weatherData.hourly.cloudcover?.[index] ?? cloudCover;
+        precipitation = weatherData.hourly.precipitation_probability?.[index] ?? precipitation_probability;
+        humidity = weatherData.hourly.relativehumidity_2m?.[index] ?? humidity;
       }
-      
-          } catch (error) {
-            console.error("Failed to fetch weather data:", error);
-          }
-        } catch (error) {
-          errorMsg.textContent = "Failed to load data.";
-          currentDiv.innerHTML = "";
-          bestdayDiv.innerHTML = "";
-          console.error(error);
-        }
-  
-        //second tab
-        
-    
- 
-} 
-
-function setslidersSci() {
-  const sliderDiv = document.getElementById("sliders-wrapper");
-  sliderDiv.innerHTML = `
-    <div class="slider-container">
-      <div class="label">Temperature</div>
-      <input type="range" class="slider" id="tempSlider" min="-50" max="50" value="0" autocomplete="off">
-      <div class="percentage-display" id="tempDisplay">0°C</div>
-      
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Wind Speed</div>
-      <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
-      <div class="percentage-display" id="windDisplay">25km/h</div>
-
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Cloud Coverage</div>
-      <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="cloudDisplay">50%</div>
-
-    </div>
-    
-
-    <div class="slider-container">
-      <div class="label">Precipitation Chance</div>
-      <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="rainDisplay">50%</div>
-
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Humidity</div>
-      <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="humidityDisplay">50%</div>
-
-    </div>
-
-    <div class="slider-container">
-      <div class="label">Full Moon</div>
-      <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="moonDisplay">50%</div>
-
-    </div>
-`;
-}
-
-
-
-function setslidersImp() {
-  const sliderDiv = document.getElementById("sliders-wrapper");
-  sliderDiv.innerHTML = `
-    <div class="slider-container">
-      <div class="label">Temperature</div>
-      <input type="range" class="slider" id="tempSlider" min="-50" max="100" value="25" autocomplete="off">
-      <div class="percentage-display" id="tempDisplay">25°F</div>
-
-    </div>
-    <div class="slider-container">
-      <div class="label">Wind Speed</div>
-      <input type="range" class="slider" id="windSlider" min="0" max="50" value="25" autocomplete="off">
-      <div class="percentage-display" id="windDisplay">25mph</div>
-
-    </div>
-    <div class="slider-container">
-      <div class="label">Cloud Coverage</div>
-      <input type="range" class="slider" id="cloudSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="cloudDisplay">50%</div>
-
-    </div>
-    <div class="slider-container">
-      <div class="label">Precipitation Chance</div>
-      <input type="range" class="slider" id="rainSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="rainDisplay">50%</div>
-
-    </div>
-    <div class="slider-container">
-      <div class="label">Humidity</div>
-      <input type="range" class="slider" id="humiditySlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="humidityDisplay">50%</div>
-
-    </div>
-    <div class="slider-container">
-      <div class="label">Full Moon</div>
-      <input type="range" class="slider" id="moonSlider" min="0" max="100" value="50" autocomplete="off">
-      <div class="percentage-display" id="moonDisplay">50%</div>
-
-    </div>
-  `;
-
-
-}
-
-
-getSliderUnit();
-const timeSlider = document.getElementById('timeSlider');
-const timeInput = document.getElementById('timeweightinput');
-const timeLabel = document.getElementById('timeLabel');
-
-
-function updateTimeDisplay() {
-
-  const hour = parseInt(timeSlider.value);
-  timeLabel.textContent = `${hour.toString().padStart(2, '0')}:00`;
-}
-
-function toggleSlider() {
-  const timeenablestatus = document.querySelectorAll('.timeenablestatus');
-
-  timeSlider.disabled = !timeSlider.disabled;
-  timeInput.disabled = !timeInput.disabled;
-  console.log(timeInput.disabled)
-  timeenablestatus.forEach(status => {
-    console.log(status)
-    if (timeInput.disabled) {
-    status.textContent = "Disabled";
-    } else {
-      status.textContent = "Enabled"
     }
-    });
-}
+
+    let maxtemps = weatherData.daily.temperature_2m_max;
+    const maxtemp = Math.max(...maxtemps);
+    let mintemps = weatherData.daily.temperature_2m_min;
+    const mintemp = Math.max(...mintemps);
 
 
+    // Current moon phase
 
-// Initial update on load
+    const timestamp = Math.floor(today.setHours(12, 0, 0, 0) / 1000);
+    const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
+    const moonData = await moonRes.json();
 
-
-const weightsliders = document.querySelectorAll('.weightslider');
-
-weightsliders.forEach(slider => {
-  slider.addEventListener('input', function (event) {
-    const sliderId = event.target.id;
-    const display = document.getElementById(sliderId.replace('slider', 'value'));
-
-
-    display.textContent = `${event.target.value}`;
-  });
-});
-
-function changeValue(amount,buttonid) {
-
-  const display = buttonid.replace('counter-button', 'weightinput');
-  let counter= parseInt(document.getElementById(display).value);
-  
-
-  if (display=="timeweightinput") {
-    
-    if ((counter+amount)>=(0)&&(counter+amount)<=(23)) {
-        counter += amount;
-
-        updateDisplay(counter,display);
+    let moonPhase = "Unavailable";
+    let moonIcon = "";
+    const mooniconMap = {
+      "New Moon": "🌑",
+      "Waxing Crescent": "🌒",
+      "1st Quarter": "🌓",
+      "Waxing Gibbous": "🌔",
+      "Full Moon": "🌕",
+      "Waning Gibbous": "🌖",
+      "3rd Quarter": "🌗",
+      "Waning Crescent": "🌘"
+    };
+    if (moonData && moonData[0] && moonData[0].Phase) {
+      moonPhase = moonData[0].Phase;
+      moonIcon = mooniconMap[moonPhase] || "";
     }
-  } else {
-        if ((counter+amount)>=(0)&&(counter+amount)<=(10)) {
-        counter += amount;
 
-        updateDisplay(counter,display);
-    }
-  }
-}
+    locationtitle.innerHTML = `
+          <h2>Weather in ${name}, ${country}</h2>
+            <p id="todayinfo">Time: ${weather.time} , Geo Location: ${latitude},  ${longitude}</p>
+        `;
 
-function updateDisplay(counter,display) {
+    // block for current temp in that city
+    currentDiv.innerHTML = `
+          <div class="today-wrapper">
+          <div id="tempcolorchange" class="largercircle">
+            <p id="todaytemperature" class="tempcircle"> ${Math.round((weather.temperature))}°C</p>
+            <p id="maxmintemp" class="tempcircle"> Max: ${maxtemp}°C  Min: ${mintemp}°C </p>
+          </div>
+          <div class="todaytext">
+            <p><strong>Windspeed:</strong> ${Math.round((weather.windspeed) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong> ${cloudCover}%</p>
+            <p><strong>Precipitation:</strong> ${precipitation} %</p>
+            <p><strong>Humidity:</strong> ${humidity}%</p>
+            <p><strong>Moon Phase:</strong> ${moonIcon} ${moonPhase}</p>
 
-  document.getElementById(display).value = counter;
-
-
-}
-
-function updateCounterFromInput(inputid) {
-  // const inputVal = parseInt(document.getElementById(inputid).value, 10);
-  
-  // if (!isNaN(inputVal)&&inputVal>3) {
-  //   counter = inputVal;
-  //   console.log("check1")
-  // } else {
-  //   counter = 1;
-  //   console.log("check2")
-  // }
-  // updateDisplay();
-}
+            </div>
+              </div>
+        `;
 
 
-const sliders = document.querySelectorAll('.slider');
+    let firstmorndaytemp = weatherData.hourly.temperature_2m.slice(0, 12)
+    const firstmornavgtemp = firstmorndaytemp.reduce((p, c, _, a) => p + c / a.length, 0);
 
-sliders.forEach(slider => {
-  slider.addEventListener('input', function (event) {
-    const sliderId = event.target.id;
-    const display = document.getElementById(sliderId.replace('Slider', 'Display'));
+    let firstmorndaywindspeed = weatherData.hourly.wind_speed_10m.slice(0, 12)
+    const firstmornavgwindspeed = firstmorndaywindspeed.reduce((p, c, _, a) => p + c / a.length, 0);
 
-    // Default to metric
-    let valuetype = {
-      "tempSlider": "°C",
-      "windSlider": "km/h",
-      "cloudSlider": "%",
-      "rainSlider": "%",
-      "humiditySlider": "%",
-      "moonSlider": "%"
+    let firstmorndaycloudcover = weatherData.hourly.cloudcover.slice(0, 12)
+    const firstmornavgcloudcover = firstmorndaycloudcover.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstmorndayprecipation = weatherData.hourly.precipitation_probability.slice(0, 12)
+    const firstmornavgprecipation = firstmorndayprecipation.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstmorndayhumidity = weatherData.hourly.relative_humidity_2m.slice(0, 12)
+    const firstmornavghumidity = firstmorndayhumidity.reduce((p, c, _, a) => p + c / a.length, 0);
+
+
+    //splits data into days
+
+
+
+    firstmornDiv.innerHTML = `
+
+          <div class="day-wrapper">
+          <h2>This Morning</h2>
+          <div id="firstdaytempcolorchange" class="largercircle">
+            <p id="firstdaytemperature" class="tempcircle"> ${Math.round(firstmornavgtemp)}°C</p>
+            <p id="firstmaxmintemp" class="tempcircle"> Max: ${Math.max(...firstmorndaytemp)}°C  Min: ${Math.min(...firstmorndaytemp)}°C </p>
+          </div>
+          
+          <div class="daytext">
+            <p><strong>Windspeed:</strong> ${Math.round((firstmornavgwindspeed) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong> ${Math.round(firstmornavgcloudcover * 100) / 100}%</p>
+            <p><strong>Precipitation:</strong> ${Math.round(firstmornavgprecipation * 100) / 100} %</p>
+            <p><strong>Humidity:</strong> ${Math.round(firstmornavghumidity * 100) / 100}%</p>
+
+            </div>
+            
+              </div>
+        `;
+
+    let firstnightdaytemp = weatherData.hourly.temperature_2m.slice(12, 24)
+    const firstnightavgtemp = firstnightdaytemp.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstnightdaywindspeed = weatherData.hourly.wind_speed_10m.slice(12, 24)
+    const firstnightavgwindspeed = firstnightdaywindspeed.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstnightdaycloudcover = weatherData.hourly.cloudcover.slice(12, 24)
+    const firstnightavgcloudcover = firstnightdaycloudcover.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstnightdayprecipation = weatherData.hourly.precipitation_probability.slice(12, 24)
+    const firstnightavgprecipation = firstnightdayprecipation.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let firstnightdayhumidity = weatherData.hourly.relative_humidity_2m.slice(12, 24)
+    const firstnightavghumidity = firstnightdayhumidity.reduce((p, c, _, a) => p + c / a.length, 0);
+
+
+    //splits data into days
+
+
+
+    firstnightDiv.innerHTML = `
+
+          <div class="day-wrapper">
+          <h2>Tonight</h2>
+          <div id="firstnighttempcolorchange" class="largercircle">
+            <p id="firstdaytemperature" class="tempcircle"> ${Math.round(firstnightavgtemp)}°C</p>
+            <p id="firstmaxmintemp" class="tempcircle"> Max: ${Math.max(...firstnightdaytemp)}°C  Min: ${Math.min(...firstnightdaytemp)}°C </p>
+          </div>
+          
+          <div class="daytext">
+            <p><strong>Windspeed:</strong> ${Math.round((firstnightavgwindspeed) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong> ${Math.round(firstnightavgcloudcover * 100) / 100}%</p>
+            <p><strong>Precipitation:</strong> ${Math.round(firstnightavgprecipation * 100) / 100} %</p>
+            <p><strong>Humidity:</strong> ${Math.round(firstnightavghumidity * 100) / 100}%</p>
+
+            </div>
+            
+              </div>
+        `;
+
+    let secmorndaytemp = weatherData.hourly.temperature_2m.slice(24, 36)
+    const secmornavgtemp = secmorndaytemp.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let secmorndaywindspeed = weatherData.hourly.wind_speed_10m.slice(24, 36)
+    const secmornavgwindspeed = secmorndaywindspeed.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let secmorndaycloudcover = weatherData.hourly.cloudcover.slice(24, 36)
+    const secmornavgcloudcover = secmorndaycloudcover.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let secmorndayprecipation = weatherData.hourly.precipitation_probability.slice(24, 36)
+    const secmornavgprecipation = secmorndayprecipation.reduce((p, c, _, a) => p + c / a.length, 0);
+
+    let secmorndayhumidity = weatherData.hourly.relative_humidity_2m.slice(24, 36)
+    const secmornavghumidity = secmorndayhumidity.reduce((p, c, _, a) => p + c / a.length, 0);
+
+
+    //splits data into days
+
+
+
+    secmornDiv.innerHTML = `
+
+          <div class="day-wrapper">
+          <h2>Tomorrow Morning</h2>
+          <div id="secdaytempcolorchange" class="largercircle">
+
+            <p id="firstdaytemperature" class="tempcircle"> ${Math.round(secmornavgtemp)}°C</p>
+            <p id="firstmaxmintemp" class="tempcircle"> Max: ${Math.max(...secmorndaytemp)}°C  Min: ${Math.min(...secmorndaytemp)}°C </p>
+
+          </div>
+          
+          <div class="daytext">
+            <p><strong>Windspeed:</strong> ${Math.round((secmornavgwindspeed) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong> ${Math.round(secmornavgcloudcover * 100) / 100}%</p>
+            <p><strong>Precipitation:</strong> ${Math.round(secmornavgprecipation * 100) / 100} %</p>
+            <p><strong>Humidity:</strong> ${Math.round(secmornavghumidity * 100) / 100}%</p>
+
+            </div>
+            
+              </div>
+        `;
+
+    //Code for the Hourly Graph
+
+    //Graph 1
+    const linegraph1 = {
+      datasets: [weatherData.hourly.temperature_2m],
+      labels: ['Temperature'],
+      colors: ['red'],
+      unit: ["°C"]
     };
 
-    if (getCookie("imperial")) {
-      valuetype = {
-        "tempSlider": "°F",
-        "windSlider": "mph",
-        "cloudSlider": "%",
-        "rainSlider": "%",
-        "humiditySlider": "%",
-        "moonSlider": "%"
-      };
-    } else if (getCookie("scientific")) {
-      valuetype = {
-        "tempSlider": "°C",
-        "windSlider": "km/h",
-        "cloudSlider": "%",
-        "rainSlider": "%",
-        "humiditySlider": "%",
-        "moonSlider": "%"
-      };
+    //Graph 2
+    const linegraph2 = {
+      datasets: [
+        weatherData.hourly.relative_humidity_2m,
+        weatherData.hourly.precipitation_probability,
+        weatherData.hourly.cloudcover
+      ],
+      labels: ['Humdity', 'Precipitation Chance', 'Cloud Cover'],
+      colors: ['rgb(50, 170, 218)', 'rgb(55, 96, 184)', 'rgb(92, 108, 114)'],
+      unit: ["%"]
+    };
+
+    //Graph 3
+    const linegraph3 = {
+      datasets: [weatherData.hourly.wind_speed_10m],
+      labels: ['Wind Speed'],
+      colors: ['rgb(192, 201, 73)'],
+      unit: ["km/h"]
+    };
+
+    const chartBlocks = document.querySelectorAll('.chart-block');
+    drawLineChart(chartBlocks[0], weatherData.hourly.time, linegraph1.datasets, linegraph1.labels, linegraph1.colors, linegraph1.unit);
+    drawLineChart(chartBlocks[1], weatherData.hourly.time, linegraph2.datasets, linegraph2.labels, linegraph2.colors, linegraph2.unit);
+    drawLineChart(chartBlocks[2], weatherData.hourly.time, linegraph3.datasets, linegraph3.labels, linegraph3.colors, linegraph3.unit);
+
+
+    [dalyhumidoutput, dalycloudoutput] = populatemultiday(weatherData)
+
+
+    //Best Day----------------------------------------------------------------------------
+    //Function to output difference between 
+
+
+
+
+    const bargraph1 = {
+      datasets: [weatherData.daily.temperature_2m_max,
+      weatherData.daily.windspeed_10m_max,
+      weatherData.daily.precipitation_probability_max,
+        dalyhumidoutput,
+        dalycloudoutput,
+      ],
+      labels: ['Temperature', 'Windspeed', 'Precipitation Chance', 'Humidty', 'Cloud Cover'],
+      colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)'],
+      unit: ["°C", '%', '%', '%', "km/h"]
+    };
+
+    drawBarChart(document.getElementById('chart2'), weatherData.daily.time, bargraph1.datasets, bargraph1.labels, bargraph1.colors, bargraph1.unit);
+
+    drawbarchartfast();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    updateTemp(Math.round((weather.temperature)))
+  } catch (error) {
+    errorMsg.textContent = "Failed to load data.";
+    currentDiv.innerHTML = "";
+
+    console.error(error);
+  }
+
+
+
+
+}
+
+//Changes temp color
+function temperatureToColor(tempF) {
+  const minTemp = 0;  // coldest
+  const maxTemp = 40; // hottest
+
+  // Clamp temperature to range
+  const clamped = Math.max(minTemp, Math.min(maxTemp, tempF));
+  const percent = (clamped - minTemp) / (maxTemp - minTemp);
+
+  // Interpolate between blue (#00f), orange (#ffa500), and red (#f00)
+  let r, g, b;
+
+  if (percent < (1 / 3)) {
+    // Blue to Green
+    const ratio = percent / (1 / 3);
+    r = 0;
+    g = Math.round(0 + ratio * 170);       // 0 → 170
+    b = Math.round(255 - ratio * 255);     // 255 → 0
+  } else if (percent < (2 / 3)) {
+    // Blue to Orange
+    const ratio = (percent - (1 / 3)) / (1 / 3);
+    r = Math.round(0 + ratio * 255);       // 0 → 255
+    g = Math.round(170 - ratio * 5);       // 170 → 165 (minor shift)
+    b = 0;
+  } else {
+    // Orange to Red
+    const ratio = (percent - (2 / 3)) / (1 / 3);
+    r = 255;
+    g = Math.round(165 - ratio * 165);          // 165 → 0
+    b = 0;
+  }
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function updateTemp(input) {
+
+
+  const tempSpan = document.querySelectorAll('.largercircle');
+
+
+  tempSpan.forEach(tempcol => {
+
+
+    tempcol.style.border = " 10px solid " + temperatureToColor(input);
+
+  });
+}
+
+function updateTempbestandclosest(id, input) {
+
+
+  const tempSpan = document.querySelector(id);
+
+
+  tempSpan.style.border = " 10px solid " + temperatureToColor(input);
+
+
+}
+
+// Graph for Hourly
+
+function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit) {
+  const canvas = container.querySelector('.hourlycanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = container.querySelector('.tooltip');
+  const legend = container.querySelector('.legend');
+
+  const padding = 50;
+  const pointRadius = 4;
+
+  const flatData = datasets.flat();
+  const maxValue = Math.max(...flatData);
+  const scaleY = (canvas.height - 2 * padding) / maxValue;
+  const scaleX = (canvas.width - 2 * padding) / (xLabels.length - 1);
+
+  function drawAxes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, canvas.height - padding);
+    ctx.moveTo(padding, canvas.height - padding);
+    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+    ctx.stroke();
+
+    ctx.fillStyle = 'black';
+    ctx.font = '12px sans-serif';
+    for (let i = 0; i <= maxValue; i += (10)) {
+      const y = canvas.height - padding - i * scaleY;
+      ctx.fillText((i+" "+unit), padding - 50, y + 4);
+      ctx.beginPath();
+      ctx.moveTo(padding - 5, y);
+      ctx.lineTo(padding, y);
+      ctx.stroke();
     }
 
-    display.textContent = `${event.target.value}${valuetype[sliderId]}`;
+    // xLabels.forEach((label, i) => {
+    //   const x = padding + i * scaleX;
+    //   ctx.fillText(label, x - 10, canvas.height - padding + 15);
+    // });
+  }
+
+  function drawLines() {
+    datasets.forEach((data, idx) => {
+      ctx.beginPath();
+      ctx.strokeStyle = colors[idx];
+      data.forEach((value, i) => {
+        const x = padding + i * scaleX;
+        const y = canvas.height - padding - value * scaleY;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+    });
+  }
+
+  function drawLegend() {
+    legend.innerHTML = '';
+    datasetLabels.forEach((label, idx) => {
+      const div = document.createElement('div');
+      div.className = 'legend-item';
+      div.innerHTML = `<div class="legend-color" style="background-color:${colors[idx]}"></div>${label} (${unit})`;
+      legend.appendChild(div);
+    });
+  }
+
+  function drawAll() {
+    drawAxes();
+    drawLines();
+  }
+
+  canvas.addEventListener('mousemove', function (e) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+
+    let closestIndex = Math.round((mouseX - padding) / scaleX);
+    if (closestIndex < 0 || closestIndex >= xLabels.length) {
+      tooltip.style.display = 'none';
+      drawAll();
+      return;
+    }
+
+    drawAll();
+
+    const x = padding + closestIndex * scaleX;
+    ctx.beginPath();
+    ctx.moveTo(x, padding);
+    ctx.lineTo(x, canvas.height - padding);
+    ctx.strokeStyle = '#aaa';
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const label = xLabels[closestIndex];
+    let info = `<strong>${label}</strong>`;
+    datasets.forEach((d, i) => {
+      info += `<br>${datasetLabels[i]}: ${d[closestIndex]} ${unit}`;
+    });
+
+    tooltip.innerHTML = info;
+    const blockRect = container.getBoundingClientRect();
+    tooltip.style.left = (e.clientX - blockRect.left + 15) + 'px';
+    tooltip.style.top = (e.clientY - blockRect.top + 15) + 'px';
+    tooltip.style.display = 'block';
   });
-});
+
+  canvas.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+    drawAll();
+  });
+
+  drawAll();
+  drawLegend();
+}
+
+function populatemultiday(weatherData) {
+  const cards = document.querySelectorAll('.card');
+
+
+  cards.forEach((card, i) => {
+
+
+    let humidityavg = weatherData.hourly.relative_humidity_2m.slice((24 * (i)), (24 * (i + 1)))
+    const dailyhumid = humidityavg.reduce((p, c, _, a) => p + c / a.length, 0);
+    dalyhumidoutput[i] = (dailyhumid / 16);
+
+    let cloudavg = weatherData.hourly.cloudcover.slice((24 * (i)), (24 * (i + 1)))
+    const dailycloud = cloudavg.reduce((p, c, _, a) => p + c / a.length, 0);
+    dalycloudoutput[i] = (dailycloud / 16);
+
+    card.innerHTML = `
+
+          <div class="card-wrapper">
+          <h2> ${(weatherData.hourly.time[i * 24].split("T"))[0]}</h2>
+
+          <div id="${card}tempcolorchange" class="largercircle circlemultiday">
+
+            <p> ${weatherData.daily.temperature_2m_max[i]}°C</p>
+
+          </div>
+            <div class="daytext">
+            <p><strong>Windspeed:</strong> ${Math.round((weatherData.daily.windspeed_10m_max[i]) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong> ${Math.round(dailycloud * 100) / 100}%</p>
+            <p><strong>Precipitation:</strong> ${Math.round(weatherData.daily.precipitation_probability_max[i] * 100) / 100} %</p>
+            <p><strong>Humidity:</strong> ${Math.round(dailyhumid * 100) / 100}%</p>
+
+            </div>
+          
+            
+              </div>
+        `;
+
+  });
+  return [dalyhumidoutput, dalycloudoutput];
+}
+
+function drawBarChart(container, xLabels, datasets, datasetLabels, colors, unit) {
+  const canvas = container.querySelector('.bestdaycanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = container.querySelector('.tooltip');
+  const legend = container.querySelector('.legend');
+
+  const padding = 50;
+
+  const flatData = datasets.flat();
+  const maxValue = Math.max(...flatData);
+  const scaleY = (canvas.height - 2 * padding) / maxValue;
+
+  const groupCount = xLabels.length;
+  const barCount = datasets.length;
+
+  const groupWidth = (canvas.width - 2 * padding) / groupCount;
+  const barWidth = groupWidth / barCount * 0.8;
+
+  function drawAxes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, canvas.height - padding);
+    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+    ctx.stroke();
+
+    ctx.fillStyle = 'black';
+    ctx.font = '12px sans-serif';
+
+    const step = Math.ceil(maxValue / 10) || 1;
+    for (let i = 0; i <= maxValue; i += step) {
+      const y = canvas.height - padding - i * scaleY;
+      ctx.fillText(i, padding - 30, y + 4);
+      ctx.beginPath();
+      ctx.moveTo(padding - 5, y);
+      ctx.lineTo(padding, y);
+      ctx.stroke();
+    }
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    xLabels.forEach((label, i) => {
+      const x = padding + i * groupWidth + groupWidth / 2;
+      ctx.fillText((label.split("-")[1] + "-" + label.split("-")[2]), x, canvas.height - padding + 15);
+    });
+  }
+
+  function drawBars() {
+    datasets.forEach((data, dsIndex) => {
+      ctx.fillStyle = colors[dsIndex];
+      data.forEach((value, i) => {
+        const x = padding + i * groupWidth + dsIndex * barWidth + barWidth * 0.1;
+        const y = canvas.height - padding - value * scaleY;
+        const height = value * scaleY;
+        ctx.fillRect(x, y, barWidth, height);
+      });
+    });
+  }
+
+  function drawLegend() {
+    legend.innerHTML = '';
+    datasetLabels.forEach((label, idx) => {
+      const div = document.createElement('div');
+      div.className = 'legend-item';
+      div.innerHTML = `<div class="legend-color" style="background-color:${colors[idx]}"></div>${label}`;
+      legend.appendChild(div);
+    });
+  }
+
+  function drawAll() {
+    drawAxes();
+    drawBars();
+  }
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+
+    let groupIndex = Math.floor((mouseX - padding) / groupWidth);
+    if (groupIndex < 0 || groupIndex >= xLabels.length) {
+      tooltip.style.display = 'none';
+      drawAll();
+      return;
+    }
+
+    drawAll();
+
+    const x = padding + groupIndex * groupWidth + groupWidth / 2;
+    ctx.beginPath();
+    ctx.moveTo(x, padding);
+    ctx.lineTo(x, canvas.height - padding);
+    ctx.strokeStyle = '#aaa';
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const label = xLabels[groupIndex];
+    let info = `<strong>${label}</strong>`;
+    datasets.forEach((d, i) => {
+      info += `<br>${datasetLabels[i]}: ${Math.round(d[groupIndex] * 100) / 100} ${unit[i]}`;
+    });
+
+    tooltip.innerHTML = info;
+    const blockRect = container.getBoundingClientRect();
+    tooltip.style.left = (e.clientX - blockRect.left + 15) + 'px';
+    tooltip.style.top = (e.clientY - blockRect.top + 15) + 'px';
+    tooltip.style.display = 'block';
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+    drawAll();
+  });
+
+  drawAll();
+  drawLegend();
+}
+
+
+
+//soundboard slider
+const soundboard = document.getElementById('soundboard');
+const sliderCount = 6;
+
+const sliderdetails = {
+  max: [50, 50, 100, 100, 100, 100, 100],
+  min: [-50, 0, 0, 0, 0, 0, 0],
+  value: [0, 25, 50, 50, 50, 50, 50],
+  unit: ["°C", "km/h", '%', '%', '%', '%'],
+  label: ["Temperature", "Wind Speed", 'Precipiation Chance', 'Humidity', 'Cloud Cover', 'Moon Phase']
+};
+
+for (let i = 1; i <= sliderCount; i++) {
+  const container = document.createElement('div');
+  container.className = 'slider-container';
+
+  const label = document.createElement('div');
+  label.className = 'slider-label';
+  label.textContent = sliderdetails.label[i - 1];
+
+
+
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.min = sliderdetails.min[i - 1];
+  slider.max = sliderdetails.max[i - 1];
+  slider.value = sliderdetails.value[i - 1];
+  slider.step = 1;
+  slider.id = `slider${i}`;
+  slider.className = 'slider';
+
+  const valueDisplay = document.createElement('div');
+  valueDisplay.className = 'slider-value';
+  valueDisplay.textContent = slider.value + sliderdetails.unit[i - 1];
+
+  const inputBox = document.createElement('input');
+  inputBox.className = 'extra-input';
+  inputBox.type = 'number';
+  inputBox.value = slider.value;
+
+
+
+  slider.addEventListener('input', () => {
+    valueDisplay.textContent = slider.value + sliderdetails.unit[i - 1];
+    inputBox.value = slider.value
+    drawbarchartfast()
+
+  });
+
+
+
+
+  // Extra input box without arrows
+  const extraInput = document.createElement('input');
+  extraInput.type = 'number';
+  extraInput.className = 'extra-input';
+  extraInput.id = 'extra-input' + i;
+  extraInput.placeholder = '0';
+
+  extraInput.addEventListener('input', () => {
+
+    drawbarchartfast()
+
+  });
+
+  container.appendChild(label);
+  container.appendChild(slider);
+  container.appendChild(valueDisplay);
+  container.appendChild(extraInput);
+  soundboard.appendChild(container);
+}
+
+function drawbarchartfast() {
+  tempcalbarchart = closestcalc(weatherData.daily.temperature_2m_max, parseInt((document.getElementById("slider1").value)), parseInt((document.querySelector("#extra-input1").value)));
+  windcalbarchart = closestcalc(weatherData.daily.windspeed_10m_max, parseInt((document.getElementById("slider2").value)), parseInt((document.querySelector("#extra-input2").value)));
+  raincalbarchart = closestcalc(weatherData.daily.precipitation_probability_max, parseInt((document.getElementById("slider3").value)), parseInt((document.querySelector("#extra-input3").value)));
+  humidcalbarchart = closestcalc(dalyhumidoutput, parseInt((document.getElementById("slider4").value)), parseInt((document.querySelector("#extra-input4").value)));
+  cloudcalbarchart = closestcalc(dalycloudoutput, parseInt((document.getElementById("slider5").value)), parseInt((document.querySelector("#extra-input5").value)));
+
+  totalcalc = tempcalbarchart.map((value, index) => value + windcalbarchart[index] + raincalbarchart[index] + raincalbarchart[index] + humidcalbarchart[index] + cloudcalbarchart[index]);
+
+  // const closestdayindex = dayclosestcalc.indexOf(Math.max(...dayclosestcalc))
+
+  const bargraph2 = {
+    datasets: [tempcalbarchart,
+      windcalbarchart,
+      raincalbarchart,
+      humidcalbarchart,
+      cloudcalbarchart,
+      totalcalc
+    ],
+    labels: ['Temperature', 'Windspeed', 'Precipitation Chance', 'Humidty', 'Cloud Cover', 'Day Total'],
+    colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)', 'rgb(0, 0, 0)'],
+    unit: ["", '', '', '', "", ""]
+  };
+
+  drawBarChart(document.getElementById('chart1'), weatherData.daily.time, bargraph2.datasets, bargraph2.labels, bargraph2.colors, bargraph2.unit);
+  outputbestday(parseInt((document.getElementById("slider1").value)), parseInt((document.getElementById("slider2").value)), parseInt((document.getElementById("slider3").value)), parseInt((document.getElementById("slider4").value)), parseInt((document.getElementById("slider1").value)))
+}
+
+//Percentage Difference Calc
+function closestcalc(input, required, weighting) {
+
+
+  if (weighting == (0) || Number.isNaN(weighting)) {
+    weighting = 1;
+  }
+
+
+  required += 0.001;
+  output = input.map(n => Math.round(((Math.abs(required - n) / (required + n))) * 1000000) / 1000000);
+
+  // Create an array of [value, originalIndex] pairs
+  const indexed = output.map((value, index) => ({ value, index }));
+
+  // Sort by value (ascending)
+  indexed.sort((a, b) => b.value - a.value);
+
+  // Create an array to hold the ranks
+  const ranks = new Array(input.length);
+
+  // Assign ranks based on sorted order
+  for (let rank = 0; rank < indexed.length; rank++) {
+    ranks[indexed[rank].index] = (rank + 1) ** (weighting * 0.5);
+  }
+
+  return ranks;
+
+}
+
+
+function outputbestday(temp, wind, rain, humid, cloud) {
+  const bestdayDiv = document.getElementById("bestdayweather");
+
+
+
+  bestdayDiv.innerHTML = `
+             
+          <div class="bestday-wrapper">
+          <h2 id="bestdaytitle">Best Day</h2>
+          <div class="bestdaywidget">
+          <div id="bestdaytempcolorchange" class="largercircle">
+
+            <p id="bestdaytemperature" class="tempcircle"> ${Math.round(temp)}°C</p>
+
+          </div>
+          <div class="bestdayovertext">
+          <div class="bestdaytext">
+            <p><strong>Windspeed:</strong></p><p> ${Math.round((wind) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong></p><p> ${Math.round(cloud * 100) / 100}%</p>
+          </div>
+          <div class="bestdaytext">
+            <p><strong>Humidity:</strong></p><p> ${Math.round(humid * 100) / 100}%</p>
+            <p><strong>Precipitation:</strong></p><p> ${Math.round(rain * 100) / 100} %</p>
+          </div>
+            </div>
+            </div>
+              </div>`;
+
+  updateTempbestandclosest("#bestdaytempcolorchange", temp);
+}
+
+function outputclosestday() {
+  getWeather();
+  setTimeout(() => { // 1000 ms = 1 second
+    const closestdayDiv = document.getElementById("closestdayweather");
+    const closestdayindex = totalcalc.indexOf(Math.max(...totalcalc))
+
+    closestdayDiv.innerHTML = `
+             
+          <div class="closestday-wrapper">
+          <h2 id="closestdaytitle">Closest Day</h2>
+          <h2>${weatherData.daily.time[closestdayindex]}</h2>
+          <div class="closestdaywidget">
+          <div id="closestdaytempcolorchange" class="largercircle">
+
+            <p id="closestdaytemperature" class="tempcircle"> ${Math.round(weatherData.daily.temperature_2m_max[closestdayindex])}°C</p>
+
+          </div>
+          <div class="closestdayovertext">
+          <div class="closestdaytext">
+            <p><strong>Windspeed:</strong></p><p> ${Math.round((weatherData.daily.windspeed_10m_max[closestdayindex]) * 100) / 100} km/h</p>
+            <p><strong>Cloud Coverage:</strong></p><p> ${Math.round(dalycloudoutput[closestdayindex] * 100) / 100}%</p>
+          </div>
+          <div class="closestdaytext">
+            <p><strong>Humidity:</strong></p><p> ${Math.round(dalyhumidoutput[closestdayindex] * 100) / 100}%</p>
+            <p><strong>Precipitation Chance:</strong></p><p> ${Math.round(weatherData.daily.precipitation_probability_max[closestdayindex] * 100) / 100} %</p>
+
+          </div>
+            </div>
+            </div>
+              </div>`;
+
+    updateTempbestandclosest("#closestdaytempcolorchange", Math.round(weatherData.daily.temperature_2m_max[closestdayindex]));
+  }, 1000);
+}

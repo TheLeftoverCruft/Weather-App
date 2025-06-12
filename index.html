@@ -1,180 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="weather.css">
-    <title>Weather App</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3489956759640804"
-     crossorigin="anonymous"></script>
-</head>
+    <title>WhatWeather</title>
+
+  </head>
 
 <body>
-  <div id="sidebar" class="sidebar bar">
-    <div class="container">
+  <div id="title">
 
-      <div class="slider-column">
-        <button class="toggle-btn" onclick="toggleWeather()">Change Weather</button>
-        <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
-        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Turn on Time</button>
-        <h2>Time</h2>
-        <div class="weightslider">
-        
-          <input type="range" id="timeSlider" class="weight_slider" min="0" max="23" value="12" step="1" oninput="updateTimeDisplay()" autocomplete="off" disabled>
-          <div class="time-display">Selected Time: <span id="timeLabel">12:00</span></div>
-          <label for="tempweightslider" class="timeenablestatus">Disabled</label>
-        </div>
-        <h2>Weighting</h2>
-        <div class="weightslider">
-          <label for="tempweightslider">Temp:</label>
-          <input type="range" id="tempweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="tempweightvalue">0</span>
-        </div>
-    
-        <div class="weightslider">
-          <label for="windweightslider">Wind:</label>
-          <input type="range" id="windweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="windweightvalue">0</span>
-        </div>
-    
-        <div class="weightslider">
-          <label for="cloudweightslider">Cloud:</label>
-          <input type="range" id="cloudweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="cloudweightvalue">0</span>
-        </div>
-    
-        <div class="weightslider">
-          <label for="rainweightslider">Precipitation:</label>
-          <input type="range" id="rainweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="rainweightvalue">0</span>
-        </div>
-    
-        <div class="weightslider">
-          <label for="humidweightslider">Humidity:</label>
-          <input type="range" id="humidityweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="humidweightvalue">0</span>
-        </div>
-    
-        <div class="weightslider">
-          <label for="moonweightslider">Moon:</label>
-          <input type="range" id="moonweightslider" class="weight_slider" autocomplete="off" min="0" max="10" step="1" value="0">
-          <span id="moonweightvalue">0</span>
-        </div>
-      </div>
-    </div>
-    <h2 id="settings_title" class="bar_title" onclick="toggleBar('sidebar')">Settings</h2>
-  </div>
-  <div id="topbar" class="topbar bar">
-    <h2 id="settings_title" class="bar_title" onclick="toggleBar('topbar')">Settings</h2>
-    <div class="container">
-
-
-      <div class="slider-column">
-        <button class="toggle-btn" onclick="toggleWeather()">Change Weather</button>
-        <button class="toggle-btn" id="change-unit" onclick="setUnits()">Change Units</button>
-        <button class="toggle-btn" id="toggletime" onclick="toggleSlider()">Turn on Time</button>
-        <h2>Time</h2>
-        <div class="weightslider">
-        <label for="windweightslider">Hours From Midnight</label>
-        <div class="counter-container">
-        <button class="counter-button" id="timecounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="timeweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off" disabled>
-        <button class="counter-button" id="timecounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        <label for="tempweightslider" class="timeenablestatus">Disabled</label>
-        </div>
-
-        <h2>Weighting</h2>
-        <div class="weightslider">
-          <label for="tempweightslider">Temp:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="tempcounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="tempweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="tempcounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-    
-        <div class="weightslider">
-          <label for="windweightslider">Wind:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="windcounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="windweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="windcounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-    
-        <div class="weightslider">
-          <label for="cloudweightslider">Cloud:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="cloudcounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="cloudweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="cloudcounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-    
-        <div class="weightslider">
-          <label for="rainweightslider">Precipitation:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="raincounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="rainweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="raincounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-    
-        <div class="weightslider">
-          <label for="humidweightslider">Humidity:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="humidcounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="humidweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="humidcounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-    
-        <div class="weightslider">
-          <label for="moonweightslider">Moon:</label>
-        <div class="counter-container">
-        <button class="counter-button" id="mooncounter-button" onclick="changeValue(-1,this.id)">-</button>
-        <input type="number" id="moonweightinput" class="counter-input" value="0" onchange="updateCounterFromInput(this.id)" autocomplete="off">
-        <button class="counter-button" id="mooncounter-button" onclick="changeValue(1,this.id)">+</button>
-        </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-
-  <div id="weather" class="weather-animation-container sun-bg">
-    <div class="sun"></div>
-    <div class="rays"></div>
-  </div>
-  <div id="top_part">
-  <h1>🌤️ Weather Finder</h1>
-  <div id="sliders-wrapper">
-
-  </div>
-
-
-
-  
-  </div>
-  <div>
     <input type="text" id="locationInput" placeholder="Enter location">
     <button onclick="getWeather()">Search</button>
-  </div>
-  <p id="errorMsg" class="error"></p>
-  <div class="weather-container">
-    <div class="top-row">
-      <div id="currentWeather" class="weather-box">Current weather info will appear here.</div>
-      <div id="fullMoonWeather" class="weather-box">Best Day weather info will appear here.</div>
-      
-    </div>
-    <div id="closestday" class="weather-box wide">Weather for the next 15 days will appear here</div>
+    <p id="errorMsg" class="error"></p>
+    <h2 id="location">Please Enter Location</h2>
+
   </div>
 
-  <div class="bottom-text" id="bottomText">by TheLeftoverCruft</div>
+
+  <div class="folder">
+    <div class="tab active" onclick="openTab('info1')">Today</div>
+    <div class="tab" onclick="openTab('info2')">Hourly</div>
+    <div class="tab" onclick="openTab('info3')">16-Days</div>
+    <div class="tab" onclick="openTab('info4')">Best Day</div>
+  </div>
+
+  <div class="content">
+    <div id="info1" class="info active">
+      <div class="top-row">
+
+        <div id="currentWeather" class="weather-box wide">Current weather info will appear here.</div>
+      </div>
+      <div class="weather-container">
+        <div class="bottom-row">
+          <div id="currentmorning" class="weather-box">This Morning info will appear here.</div>
+          <div id="currentnight" class="weather-box">This Night info will appear here.</div>
+          <div id="tomorrowmorning" class="weather-box">Tomorrow Morning info will appear here.</div>
+
+        </div>
+      </div>
+
+    </div>
+    <div id="info2" class="info">
+      <div id="linechart-wrapper">
+      <div class="chart-block">
+        <canvas class="hourlycanvas" width="600" height="300"></canvas>
+        <div class="tooltip"></div>
+        <div class="legend"></div>
+      </div>
+
+      <div class="chart-block">
+        <canvas class="hourlycanvas" width="600" height="300"></canvas>
+        <div class="tooltip"></div>
+        <div class="legend"></div>
+      </div>
+
+      <div class="chart-block">
+        <canvas class="hourlycanvas" width="600" height="300"></canvas>
+        <div class="tooltip"></div>
+        <div class="legend"></div>
+      </div>
+      </div>
+    </div>
+    <div id="info3" class="info">
+      <div id="multidaygridcontainer">
+        <div class="grid">
+          <!-- 16 cards -->
+          <div id="card1" class="card">Day 1</div>
+          <div id="card2" class="card">Day 2</div>
+          <div id="card3" class="card">Day 3</div>
+          <div id="card4" class="card">Day 4</div>
+          <div id="card5" class="card">Day 5</div>
+          <div id="card6" class="card">Day 6</div>
+          <div id="card7" class="card">Day 7</div>
+          <div id="card8" class="card">Day 8</div>
+          <div id="card9" class="card">Day 9</div>
+          <div id="card10" class="card">Day 10</div>
+          <div id="card11" class="card">Day 11</div>
+          <div id="card12" class="card">Day 12</div>
+          <div id="card13" class="card">Day 13</div>
+          <div id="card14" class="card">Day 14</div>
+          <div id="card15" class="card">Day 15</div>
+          <div id="card16" class="card">Day 16</div>
+        </div>
+      </div>
+    </div>
+    <div id="info4" class="info">
+      <div id="chart-wrapper">
+        <h2>Preferences</h2>
+        <div class="soundboard" id="soundboard">
+          <h3 id="weightingtitle">Importance <br>(0-10)</h3>
+
+        </div>
+        <button onclick="outputclosestday()" id="submitbutton">Search Best Day</button>
+        <div class="top-row">
+        <div id="bestdayweather" class="weather-box">Best Day weather info will appear here.</div>
+        <div id="closestdayweather" class="weather-box">Closest Day weather info will appear here.</div>
+        </div>
+
+        <div id="chart1" class="chartContainer">
+          <canvas class="bestdaycanvas" width="700" height="350"></canvas>
+          <div class="tooltip"></div>
+          <div class="legend"></div>
+        </div>
+
+        <div id="chart2" class="chartContainer">
+          <canvas class="bestdaycanvas" width="700" height="350"></canvas>
+          <div class="tooltip"></div>
+          <div class="legend"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
 </body>
 <script src="weather.js"></script>
-<script src="backgroundweatheranimation.js"></script>
+
 </html>
