@@ -441,6 +441,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
     // block for current temp in that city
     currentDiv.innerHTML = `
           <div class="today-wrapper">
+          <h2>Current Weather</h2>
           <div id="tempcolorchange" class="largercircle">
             <p id="todaytemperature" class="tempcircle"> ${Math.round((weather.temperature))}${tempunit}</p>
             <p id="maxmintemp" class="tempcircle"> Max: ${maxtemp}${tempunit}  Min: ${mintemp}${tempunit} </p>
@@ -657,12 +658,11 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
   const legend = container.querySelector('.legend');
 
   const padding = 50;
-  const pointRadius = 4;
 
   const flatData = datasets.flat();
   const maxValue = Math.max(...flatData);
   const scaleY = (canvas.height - 2 * padding) / maxValue;
-  const scaleX = (canvas.width - 2 * padding) / (xLabels.length - 1);
+  const scaleX = (canvas.width - 2 * padding) / (xLabels.length);
 
   function drawAxes() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -675,19 +675,14 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
 
     ctx.fillStyle = 'black';
     ctx.font = '12px sans-serif';
-    for (let i = 0; i <= maxValue; i += (10)) {
+    for (let i = 0; i <= maxValue; i += 10) {
       const y = canvas.height - padding - i * scaleY;
-      ctx.fillText((i+" "+unit), padding - 50, y + 4);
+      ctx.fillText(i + " " + unit, padding - 50, y + 4);
       ctx.beginPath();
       ctx.moveTo(padding - 5, y);
       ctx.lineTo(padding, y);
       ctx.stroke();
     }
-
-    // xLabels.forEach((label, i) => {
-    //   const x = padding + i * scaleX;
-    //   ctx.fillText(label, x - 10, canvas.height - padding + 15);
-    // });
   }
 
   function drawLines() {
@@ -701,7 +696,6 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
-
     });
   }
 
@@ -720,12 +714,18 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
     drawLines();
   }
 
-  canvas.addEventListener('mousemove', function (e) {
+  function showTooltip(xClient, yClient) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
+    const mouseX = xClient - rect.left;
+    const mouseY = yClient - rect.top;
 
-    let closestIndex = Math.round((mouseX - padding) / scaleX);
-    if (closestIndex < 0 || closestIndex >= xLabels.length) {
+    // If outside plot area, hide tooltip and redraw
+    if (
+      mouseX < padding ||
+      mouseX > canvas.width - padding ||
+      mouseY < padding ||
+      mouseY > canvas.height - padding
+    ) {
       tooltip.style.display = 'none';
       drawAll();
       return;
@@ -733,14 +733,18 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
 
     drawAll();
 
-    const x = padding + closestIndex * scaleX;
+    // Draw vertical line exactly at mouseX (cursor/finger)
     ctx.beginPath();
-    ctx.moveTo(x, padding);
-    ctx.lineTo(x, canvas.height - padding);
+    ctx.moveTo(mouseX, padding);
+    ctx.lineTo(mouseX, canvas.height - padding);
     ctx.strokeStyle = '#aaa';
     ctx.setLineDash([4, 4]);
     ctx.stroke();
     ctx.setLineDash([]);
+
+    // Find closest data point index to mouseX for tooltip info
+    let closestIndex = Math.round((mouseX - padding) / scaleX);
+    closestIndex = Math.max(0, Math.min(xLabels.length - 1, closestIndex));
 
     const label = xLabels[closestIndex];
     let info = `<strong>${label}</strong>`;
@@ -748,21 +752,43 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
       info += `<br>${datasetLabels[i]}: ${d[closestIndex]} ${unit}`;
     });
 
-    tooltip.innerHTML = info;
     const blockRect = container.getBoundingClientRect();
-    tooltip.style.left = (e.clientX - blockRect.left + 15) + 'px';
-    tooltip.style.top = (e.clientY - blockRect.top + 15) + 'px';
+    tooltip.innerHTML = info;
+    tooltip.style.left = (xClient - blockRect.left + 10) + 'px';
+    tooltip.style.top = (yClient - blockRect.top + 10) + 'px';
     tooltip.style.display = 'block';
-  });
+  }
 
-  canvas.addEventListener('mouseleave', () => {
+  function hideTooltip() {
     tooltip.style.display = 'none';
     drawAll();
+  }
+
+  canvas.addEventListener('mousemove', e => showTooltip(e.clientX, e.clientY));
+  canvas.addEventListener('mouseleave', hideTooltip);
+
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length > 0) {
+      showTooltip(e.touches[0].clientX, e.touches[0].clientY);
+    }
   });
+
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length > 0) {
+      showTooltip(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', hideTooltip);
 
   drawAll();
   drawLegend();
 }
+
+
+
+
 
 function populatemultiday(weatherData) {
   const cards = document.querySelectorAll('.card');

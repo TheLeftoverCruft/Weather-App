@@ -1,3 +1,4 @@
+@media (min-width: 601px) {
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #4ade80, #22d3ee);
@@ -418,13 +419,14 @@ position: relative;
 
     .tooltip {
       position: absolute;
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 6px 8px;
+      display: none;
+      background: white;
+      border: 1px solid #333;
+      padding: 5px 10px;
       font-size: 14px;
       pointer-events: none;
-      display: none;
       white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
     /* 16-Days */
@@ -890,5 +892,926 @@ position: relative;
       color: black;
     }
 
+}
+  @media (max-width: 600px) {
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4ade80, #22d3ee);
+      padding-top: 20px;
+      margin: 0;
+      
+    }
+
+    #title {
+      margin-left: 5px;
+      gap: 0px;
+    }
+    #location {
+      font-size: 20px;
+    }
+
+    .folder {
+      padding-left: 0;
+      border-radius: 6px 6px 0 0;
+      display: flex;
+      position: relative;
+    }
+
+    .tab {
+      background: #ccc;
+      padding: 10px 20px;
+      border: 1px solid #aaa;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      margin-right: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab.active {
+      background: white;
+      font-weight: bold;
+      z-index: 2;
+    }
+
+    .content {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #aaa;
+      background: white;
+      padding: 0;
+      border-radius: 0 0 6px 6px;
+      position: relative;
+      top: -1px;
+      overflow-y: hidden;
+    }
+
+    .info {
+      display: none;
+    }
+
+    .info.active {
+      display: block;
+    }
+
+    #todayinfo {
+      font-size: 12px;
+
+
+    }
+    #locationInput {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 8px 0px 0px 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      width: 40%;
+      max-width: 300px;
+      box-sizing: border-box;
+      
+    }
+    #locationInput:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    #locationButt {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: white;
+      color: #696969;
+      border: 2px solid #ccc;
+      border-radius: 8px 0px 0px 8px;;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+
+    }
+    #locationButt:hover {
+      color: white;
+      background-color: #b3b3b3;
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    .gps-button {
+      padding: 10px 10px;
+      font-size: 16px;
+      background-color: #ccc;
+      color: white;
+      border-color: #ccc;
+      border: 5px none;
+      border-radius: 0px 8px 8px 0px;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      margin-left: -4px;
+      
+    }
+
+    .gps-button:hover {
+      background-color: #007BFF;
+    }
+
+    .gps-button svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+    }
+    .settings-button {
+      padding: 10px 10px;
+      font-size: 16px;
+      background-color: #ccc;
+      color: white;
+      border-color: #ccc;
+      border: 5px none;
+      border-radius: 0px 8px 8px 0px;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      margin-left: -5px;
+      
+    }
+
+    .settings-button:hover {
+      background-color: #007BFF;
+    }
+
+    .settings-button svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+    }
+.settings-tab {
+  position: absolute;
+  top: 70px;
+  right: 30px;
+  width: 200px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 0px 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 14px;
+  z-index: 10;
+
+  display: none; /* <-- Hides by default */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.settings-tab.active {
+  display: flex;
+}
+
+/* Center the heading text */
+.settings-tab h4 {
+  margin: 0px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+      .switch-container {
+    width: 140px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .switch {
+    position: relative;
+    width: 140px;
+    height: 30px;
+    background: #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .knob {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 62px;
+    height: 22px;
+    background: #007bff;
+    border-radius: 10px;
+    transition: left 0.3s ease, background 0.3s ease;
+  }
+
+  .switch.active .knob {
+    left: 74px;
+    background: #28a745;
+  }
+
+  .units-label {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #000000;
+  }
+  
+
+
+    /* Today ========================================================*/
+
+    #info1 {
+      height:150vh;
+        overflow-x: hidden;
+      overflow-y: auto; 
+    }
+
+
+    .largercircle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 10px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 50px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+    }
+
+    .today-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    #tempcolorchange {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+
+    }
+
+    .tempcircle {
+      gap: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: black;
+      font-size: 60px;
+
+    }
+
+    #maxmintemp {
+      font-size: 20px;
+    }
+
+    .todaytext {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 20px;
+    margin-left: 0px;
+    width: 250px;
+    height: 250px;
+    text-align: center;
+  }
+  .todaytext p {
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.4;
+  }
+    .maindaytext {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 20px;
+    margin-left: 0px;
+    width: 250px;
+    height: 250px;
+    text-align: center;
+  }
+  .maindaytext p {
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+    .weather-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* margin-top: 20px; */
+      gap: 20px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: center;
+      padding-top: 20px;
+      gap: 20px;
+    }
+
+    .bottom-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 10px;
+      gap: 10px;
+    }
+
+    .weather-box {
+      width: 300px;
+      padding: 20px;
+      background: #ffffff;
+      text-align: center;
+      border-radius: 50px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      justify-content: center;
+      display: flex;
+    }
+
+    .weather-box.wide {
+      width: 300px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 50px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      justify-content: center;
+      display: flex;
+    }
+
+
+    .day-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .day-wrapper .daytext p {
+font-size: 20px;
+    }
+
+    #firstmaxmintemp {
+      font-size: 20px;
+    }
+
+    #firstdaytemperature {
+      font-size: 80px;
+      color: #464646;
+    }
+
+    /* hourly graph =========================================================*/
+#linechart-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 0;
+  padding-bottom: 0px;
+}
+
+    .chart-block {
+            display: flex;
+      justify-content: center;
+      flex-direction: column;
+position: relative;
+  width: 280px;
+  height: 150px;
+  background: white;
+  border-radius: 0px;
+  padding: 35px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+    }
+
+    .hourlycanvas {
+        display: block;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0px;
+  padding: 10px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      margin-top: 6px;
+      gap: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      border-radius: 2px;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      font-size: 14px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+    }
+
+    /* 16-Days */
+        #info3 {
+      height:1100px;
+  overflow-x: auto;
+  width: 100vw;
+  position: relative;
+    }
+    
+    #multidaygridcontainer {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  font-family: sans-serif;
+  padding: 20px;
+  padding: 0;
+  margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      justify-content: center;
+
+      font-family: sans-serif;
+      text-align: center;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 10px;
+      max-width: 1400px;
+      width: 100%;
+    }
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 0px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  /* Remove fixed height */
+  height: auto;
+  min-height: 120px; /* optional: to preserve original size when short */
+  text-align: center;
+  text-wrap: balance;
+  flex-wrap: wrap;
+}
+.daytext {
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  margin-left: 0px;
+  width: 130px;
+  height: 330px;
+}
+.daytext p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+    .card:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+    .circlemultiday {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 10px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 0px;
+      padding: 0px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+      font-size: 20px;
+    }
+
+    .card-wrapper {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      margin: 10px;
+    }
+ /* Best Day ----------------------------------------------------*/
+ #info4 {
+  zoom: 50%;
+ }
+#chart-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 0;
+  padding-bottom: 50px;
+}
+
+.chartContainer {
+  position: relative;
+  width: 700px;
+  height: 350px;
+  background: white;
+  border-radius: 51px;
+  padding: 35px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+.bestdaycanvas {
+  display: block;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+}
+  .chartContainer.tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(0,0,0,0.75);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: none;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .chartContainer.legend {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .chartContainer.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .chartContainer.legend-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+  }
+.top-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* sliders ----------------------------------------------------*/
+
+  #weightingtitle {
+    margin-top: 230px;
+  }
+
+  .soundboard {
+    padding-top: 5px;
+    display: flex;
+
+    gap: 40px;
+    margin-right: 120px;
+  }
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    height: 100px; /* fixed height so value doesn't shift */
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 150px;
+    height: 12px;
+    background: #c5c5c5;
+    border-radius: 4px;
+    transform: rotate(-90deg);
+    cursor: pointer;
+    margin-bottom: 8px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 24px;
+    background: #dfdfdf;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid #575757;
+    transition: background 0.3s;
+    margin-top: -6px;
+  }
+  input[type="range"]:hover::-webkit-slider-thumb {
+    background: #b8b8b8;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 24px;
+    background: #dfdfdf;
+    border-radius: 4px;
+    border: 2px solid #575757;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  input[type="range"]:hover::-moz-range-thumb {
+    background: #b8b8b8;
+  }
+.slider-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Push content to bottom */
+  height: 20px; /* Set a height */
+
+  text-align: center;
+}
+.slider {
+  display: flex;
+  font-size: 14px;
+  margin-top: 80px;
+  user-select: none;
+}
+
+.slider-value {
+  font-size: 14px;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  user-select: none;
+  color: #000000;
+  width: 120%;
+  text-align: center;
+}
+
+.extra-input {
+  display: flex;
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  -moz-appearance: textfield;
+  height: 20px;
+}
+
+.extra-input::-webkit-outer-spin-button,
+.extra-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+  /* submit button */
+
+#submitbutton {
+  background: linear-gradient(135deg, #4ade80, #22d3ee);
+  border: none;
+  padding: 14px 200px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0px;
+  margin-top: -20px;
+}
+
+#submitbutton::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+  animation: pulse 2s infinite;
+  z-index: 0;
+}
+
+#submitbutton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#submitbutton span {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+/* best day widget */
+    #bestdaytempcolorchange{
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 1px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      /* margin-left: 20px; */
+      padding: 0px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+      font-size: 20px;
+      margin-left: 15px;
+    }
+    #bestdaytemperature{
+      font-size: 30px;
+    }
+
+    #bestdaytitle{
+      margin: -20px;
+    }
+    .bestday-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      margin-top: 20px;
+    }
+.bestdaywidget {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0px; /* spacing between circle and text */
+}
+
+.bestdaytext {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0px;
+  margin-left: -20px;
+  width:120px;
+  height: 100px;
+}
+.bestdaytext p {
+  margin: 0;
+  line-height: 1.4;
+}
+.bestdayovertext {
+    display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0px; /* spacing between circle and text */
+  margin-left: -20px;
+  
+}
+
+
+
+/* closest day widget */
+    #closestdaytempcolorchange{
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 1px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      /* margin-left: 20px; */
+      padding: 0px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+      font-size: 20px;
+      margin-left: 15px;
+      margin-top: 0px;
+      
+    }
+    #closestdaytemperature{
+      font-size: 30px;
+    }
+
+    #closestdaytitle{
+      margin: -20px;
+    }
+    .closestday-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      margin-top: 20px;
+    }
+.closestdaywidget {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: -20px;
+  gap: 0px; /* spacing between circle and text */
+}
+
+.closestdaytext {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0px;
+  margin-left: -20px;
+  width:120px;
+  height: 100px;
+}
+.closestdayovertext {
+    display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0px; /* spacing between circle and text */
+  margin-left: -20px;
+  margin-top: -45px;
+  
+}
+
+.closestdaytext p {
+  margin: 0;
+  line-height: 1.4;
+}
+    .mainlargercircle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 10px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 50px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+    }
+}
 
 
