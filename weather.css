@@ -389,13 +389,15 @@ position: relative;
   margin-bottom: 20px;
     }
 
-    .hourlycanvas {
-        display: block;
+.hourlycanvas {
+  display: block;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 0px;
-  padding: 10px;
-    }
+  padding: 0;              /* REMOVE padding! */
+  width: 700px;
+  height: 350px;
+}
 
     .legend {
       display: flex;

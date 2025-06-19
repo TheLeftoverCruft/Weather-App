@@ -4,11 +4,11 @@ let raincalbarchart = ""
 let humidcalbarchart = ""
 let cloudcalbarchart = ""
 let weatherData = []
-let modifiedData={}
+let modifiedData = {}
 let totalcalc = []
 let dalyhumidoutput = Array(16).fill(0);
 let dalycloudoutput = Array(16).fill(0);
-let moonlight =[];
+let moonlight = [];
 let moonillumin = [];
 let moonphase = [];
 let iconsarray = [];
@@ -39,13 +39,13 @@ const switchEl = document.getElementById('unitSwitch');
 let isImperial = false;
 
 function toggleSwitch() {
-  
+
   if (getCookie("scientific")) {
     switchEl.classList.toggle('active');
     switchEl.setAttribute('aria-checked', 'true');
     console.log('Selected unit: Imperial');
     setUnits("imperial")
-  
+
   } else {
     switchEl.classList.toggle('active');
     switchEl.setAttribute('aria-checked', 'false');
@@ -53,7 +53,7 @@ function toggleSwitch() {
     setUnits("metric")
 
   }
-location.reload();
+  location.reload();
 }
 
 if (getCookie("imperial")) {
@@ -69,38 +69,38 @@ switchEl.addEventListener('keydown', e => {
 });
 
 //unit cookie -----------------------------------------------------------------
-  function setCookie(name, value, days = 7) {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+}
+
+// Get a cookie by name
+function getCookie(name) {
+  const cookies = document.cookie.split(';');
+  for (let c of cookies) {
+    const [key, value] = c.trim().split('=');
+    if (key === name) return value;
   }
-  
-  // Get a cookie by name
-  function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let c of cookies) {
-      const [key, value] = c.trim().split('=');
-      if (key === name) return value;
-    }
-    return null;
+  return null;
+}
+
+// Delete a cookie by name
+function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
+
+// Rename a cookie (copy value and delete old one)
+function renameCookie(oldName, newName) {
+  const value = getCookie(oldName);
+  if (value) {
+    setCookie(newName, value);
+    deleteCookie(oldName);
   }
-  
-  // Delete a cookie by name
-  function deleteCookie(name) {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  }
-  
-  // Rename a cookie (copy value and delete old one)
-  function renameCookie(oldName, newName) {
-    const value = getCookie(oldName);
-    if (value) {
-      setCookie(newName, value);
-      deleteCookie(oldName);
-    }
-  }
-  
-  // Button click handler
-  function setUnits(unit) {
-    if (unit=="unidentfied") {
+}
+
+// Button click handler
+function setUnits(unit) {
+  if (unit == "unidentfied") {
     if (getCookie("imperial")) {
       renameCookie("imperial", "scientific");
     } else if (getCookie("scientific")) {
@@ -110,14 +110,14 @@ switchEl.addEventListener('keydown', e => {
     }
   }
   else {
-    if (unit=="metric"&&getCookie("imperial")) {
+    if (unit == "metric" && getCookie("imperial")) {
       renameCookie("imperial", "scientific");
-    } else if (unit=="imperial"&&getCookie("scientific")) {
+    } else if (unit == "imperial" && getCookie("scientific")) {
       renameCookie("scientific", "imperial");
     }
   }
-    
-  }
+
+}
 
 
 function openTab(tabId) {
@@ -128,46 +128,50 @@ function openTab(tabId) {
   document.querySelector(`[onclick*="${tabId}"]`).classList.add('active');
   document.getElementById(tabId).classList.add('active');
 }
-  function mooniconfunction(percentage,phase) {
-    
-      if (phase=="New Moon"||phase=="Waxing Crescent"||phase=="Waxing Gibbous"||phase=="Full Moon") {
-         iconsarray={              
-          0: "🌑",
+function mooniconfunction(percentage, phase) {
+
+  if (phase == "New Moon" || phase == "Waxing Crescent" || phase == "Waxing Gibbous" || phase == "Full Moon") {
+    iconsarray = {
+      0: "🌑",
       1: "🌒",
       2: "🌓",
       3: "🌔",
-      4: "🌕"}
-        moonphasearray={              
-          0: "New Moon",
+      4: "🌕"
+    }
+    moonphasearray = {
+      0: "New Moon",
       1: "Waxing Crescent",
       2: "3rd Quarter",
       3: "Waxing Gibbous",
-      4: "Full Moon"}
-          }
+      4: "Full Moon"
+    }
+  }
 
-    if (phase=="New Moon"||phase=="Waning Crescent"||phase=="Waning Gibbous"||phase=="Full Moon") {
-        iconsarray={              
-          0: "🌑",
+  if (phase == "New Moon" || phase == "Waning Crescent" || phase == "Waning Gibbous" || phase == "Full Moon") {
+    iconsarray = {
+      0: "🌑",
       1: "🌘",
       2: "🌗",
       3: "🌖",
-      4: "🌕"}
-        moonphasearray={              
-          0: "New Moon",
+      4: "🌕"
+    }
+    moonphasearray = {
+      0: "New Moon",
       1: "Waning Crescent",
       2: "3rd Quarter",
       3: "Waning Gibbous",
-      4: "Full Moon"}
-          }
+      4: "Full Moon"
+    }
+  }
 
-          return [iconsarray[Math.round(((percentage)-1)/25)] + " "+moonphasearray[Math.round(((percentage)-1)/25)]];
-         
+  return [iconsarray[Math.round(((percentage) - 1) / 25)] + " " + moonphasearray[Math.round(((percentage) - 1) / 25)]];
 
-      
 
-    };
 
-async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
+
+};
+
+async function getWeather(gpslat, gpslong, gpscity, gpscountry) {
   const location = document.getElementById("locationInput").value;
   const currentDiv = document.getElementById("currentWeather");
   const firstmornDiv = document.getElementById("currentmorning");
@@ -179,7 +183,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
   currentDiv.innerHTML = "Loading...";
   locationtitle.innerHTML = "";
 
-  
+
 
   try {
     if (getCookie("scientific")) {
@@ -191,12 +195,12 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
     else {
       speedmultipler = 0.621371;
       speedunit = "mph";
-      tempmultipler = (9/5)+32;
+      tempmultipler = (9 / 5) + 32;
       tempunit = "°F";
     }
     // gets latitude and longitude sand name
-    if (typeof lat == "undefined"||typeof lon == "undefined") {}
-    
+    if (typeof lat == "undefined" || typeof lon == "undefined") { }
+
     const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
     const geoData = await geoRes.json();
 
@@ -218,7 +222,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
 
     let { latitude, longitude, name, country } = geoData.results[0];
 
-    if (typeof gpslat !== "undefined"&&typeof gpslong !== "undefined"&&typeof gpscity !== "undefined"&&typeof gpscountry !== "undefined") {
+    if (typeof gpslat !== "undefined" && typeof gpslong !== "undefined" && typeof gpscity !== "undefined" && typeof gpscountry !== "undefined") {
       latitude = gpslat;
       longitude = gpslong;
       name = gpscity;
@@ -232,7 +236,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
     const time_fetch = `&timezone=auto&start_date=${start_date}&end_date=${end_date}`;
 
 
-    
+
     // gets current weather from lat and long data
     const weatherRes = await fetch((weatherlocationfetch + current_weather_fetch + hourly_fetch + daily_fetch + time_fetch));
 
@@ -240,17 +244,17 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
 
 
     if (getCookie("imperial")) {
-    modifiedData = structuredClone(weatherData);
-    console.log(modifiedData )
-    modifiedData.daily.temperature_2m_max = weatherData.daily.temperature_2m_max.map(temp => Math.round((temp * (9/5))+32));
-    modifiedData.daily.temperature_2m_min = weatherData.daily.temperature_2m_min.map(temp => Math.round((temp * (9/5))+32));    
-    modifiedData.hourly.temperature_2m = weatherData.hourly.temperature_2m.map(temp => Math.round((temp * (9/5))+32));   
-    modifiedData.daily.windspeed_10m_max = weatherData.daily.windspeed_10m_max.map(speed => Math.round((speed*0.621371)));
-    modifiedData.hourly.wind_speed_10m = weatherData.hourly.wind_speed_10m.map(speed => Math.round((speed*0.621371)));    
-    modifiedData.current_weather.temperature = Math.round(( weatherData.current_weather.temperature * (9/5))+32);
-    weatherData = structuredClone(modifiedData);
-  }
-  const weather = weatherData.current_weather;
+      modifiedData = structuredClone(weatherData);
+      console.log(modifiedData)
+      modifiedData.daily.temperature_2m_max = weatherData.daily.temperature_2m_max.map(temp => Math.round((temp * (9 / 5)) + 32));
+      modifiedData.daily.temperature_2m_min = weatherData.daily.temperature_2m_min.map(temp => Math.round((temp * (9 / 5)) + 32));
+      modifiedData.hourly.temperature_2m = weatherData.hourly.temperature_2m.map(temp => Math.round((temp * (9 / 5)) + 32));
+      modifiedData.daily.windspeed_10m_max = weatherData.daily.windspeed_10m_max.map(speed => Math.round((speed * 0.621371)));
+      modifiedData.hourly.wind_speed_10m = weatherData.hourly.wind_speed_10m.map(speed => Math.round((speed * 0.621371)));
+      modifiedData.current_weather.temperature = Math.round((weatherData.current_weather.temperature * (9 / 5)) + 32);
+      weatherData = structuredClone(modifiedData);
+    }
+    const weather = weatherData.current_weather;
 
     let cloudCover = "Unavailable";
     let precipitation = "Unavailable";
@@ -283,15 +287,15 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
       const timestamp = Math.floor(checkDate.setHours(12, 0, 0, 0) / 1000);
       const moonRes = await fetch(`https://api.farmsense.net/v1/moonphases/?d=${timestamp}`);
       const moonData = await moonRes.json();
-      
+
       if (moonData[0]) {
-        moonlight[i]=moonData[0].Illumination;
-        moonillumin=moonlight.map(n => n*100);
-        moonphase[i]=moonData[0].Phase;
-       
-        
+        moonlight[i] = moonData[0].Illumination;
+        moonillumin = moonlight.map(n => n * 100);
+        moonphase[i] = moonData[0].Phase;
+
+
         // moonillumin += '<tr><th>'+timestamp+'</th><th>'+(Math.round((((Math.abs(moonilluminreq-moonData[0].Illumination))/moonilluminreq)**2)*100)/100)+'</th></tr>' ;
-        
+
       }
     }
 
@@ -319,7 +323,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
     let firstmorndayhumidity = weatherData.hourly.relative_humidity_2m.slice(0, 12)
     const firstmornavghumidity = firstmorndayhumidity.reduce((p, c, _, a) => p + c / a.length, 0);
 
-  
+
     //splits data into days
 
 
@@ -338,7 +342,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
             <p><strong>Cloud Coverage:</strong><p></p> ${Math.round(firstmornavgcloudcover * 100) / 100}%</p>
             <p><strong>Precipitation:</strong><p></p> ${Math.round(firstmornavgprecipation * 100) / 100} %</p>
             <p><strong>Humidity:</strong><p></p> ${Math.round(firstmornavghumidity * 100) / 100}%</p>
-            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[0],moonphase[0])}</p>
+            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[0], moonphase[0])}</p>
 
             </div>
             
@@ -379,7 +383,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
             <p><strong>Cloud Coverage:</strong><p></p> ${Math.round(firstnightavgcloudcover * 100) / 100}%</p>
             <p><strong>Precipitation:</strong><p></p> ${Math.round(firstnightavgprecipation * 100) / 100} %</p>
             <p><strong>Humidity:</strong><p></p> ${Math.round(firstnightavghumidity * 100) / 100}%</p>
-            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[0],moonphase[0])}</p>
+            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[0], moonphase[0])}</p>
             </div>
             
               </div>
@@ -421,7 +425,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
             <p><strong>Cloud Coverage:</strong><p></p> ${Math.round(secmornavgcloudcover * 100) / 100}%</p>
             <p><strong>Precipitation:</strong><p></p> ${Math.round(secmornavgprecipation * 100) / 100} %</p>
             <p><strong>Humidity:</strong><p></p> ${Math.round(secmornavghumidity * 100) / 100}%</p>
-            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[1],moonphase[1])}</p>
+            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[1], moonphase[1])}</p>
 
             </div>
             
@@ -451,7 +455,7 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
             <p><strong>Cloud Coverage:</strong> ${cloudCover}%</p>
             <p><strong>Precipitation:</strong> ${precipitation} %</p>
             <p><strong>Humidity:</strong> ${Math.round((currentHumidity) * 100) / 100}%</p>
-            <p><strong>Moon Phase:</strong> ${mooniconfunction(moonillumin[0],moonphase[0])}</p>
+            <p><strong>Moon Phase:</strong> ${mooniconfunction(moonillumin[0], moonphase[0])}</p>
 
             </div>
               </div>
@@ -511,8 +515,8 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
         moonillumin
       ],
       labels: ['Temperature', 'Windspeed', 'Precipitation Chance', 'Humidty', 'Cloud Cover', "Moon Light"],
-      colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)','rgb(199, 141, 204)'],
-      unit: [tempunit, speedunit, '%', '%', "%","%"]
+      colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)', 'rgb(199, 141, 204)'],
+      unit: [tempunit, speedunit, '%', '%', "%", "%"]
     };
 
     drawBarChart(document.getElementById('chart2'), weatherData.daily.time, bargraph1.datasets, bargraph1.labels, bargraph1.colors, bargraph1.unit);
@@ -554,34 +558,34 @@ async function getWeather(gpslat,gpslong,gpscity,gpscountry) {
 }
 
 function gpsgetWeather() {
-        if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(success, error);
-      } else {
-        document.getElementById("errorMsg").textContent = "Geolocation not supported.";
-      }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  } else {
+    document.getElementById("errorMsg").textContent = "Geolocation not supported.";
+  }
 
-      function success(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
- 
+  function success(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
 
 
-        const geocodeURL = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
-        fetch(geocodeURL)
-        .then(res => res.json())
-        .then(data => {
-            const city = data.address.city || data.address.town || data.address.village || "Unknown City";
-            const country = data.address.country || "Unknown Country";
-            document.getElementById("locationInput").value = `${city}`;
-            getWeather(lat,lon,city,country)
-        });
 
-      }
-      function error() {
-        document.getElementById("errorMsg").textContent = "Location access denied.";
-      }
+    const geocodeURL = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+    fetch(geocodeURL)
+      .then(res => res.json())
+      .then(data => {
+        const city = data.address.city || data.address.town || data.address.village || "Unknown City";
+        const country = data.address.country || "Unknown Country";
+        document.getElementById("locationInput").value = `${city}`;
+        getWeather(lat, lon, city, country)
+      });
 
-  
+  }
+  function error() {
+    document.getElementById("errorMsg").textContent = "Location access denied.";
+  }
+
+
 }
 //Changes temp color
 function temperatureToColor(tempF) {
@@ -589,8 +593,8 @@ function temperatureToColor(tempF) {
   let maxTemp = 40; // hottest
 
   if (getCookie("imperial")) {
-       minTemp = 32;  // coldest
-       maxTemp = 40*9/5+32; // hottest
+    minTemp = 32;  // coldest
+    maxTemp = 40 * 9 / 5 + 32; // hottest
   }
 
   // Clamp temperature to range
@@ -630,9 +634,9 @@ function updateTemp(input) {
 
 
   tempSpan.forEach(tempcol => {
-   
-    tempid=document.querySelector(`#${tempcol.id}`);
-   
+
+    tempid = document.querySelector(`#${tempcol.id}`);
+
     tempid.style.border = " 10px solid " + temperatureToColor(input);
 
   });
@@ -658,34 +662,45 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
   const legend = container.querySelector('.legend');
 
   const padding = 50;
-
   const flatData = datasets.flat();
   const maxValue = Math.max(...flatData);
   const scaleY = (canvas.height - 2 * padding) / maxValue;
-  const scaleX = (canvas.width - 2 * padding) / (xLabels.length);
+  const scaleX = (canvas.width - 2 * padding) / (xLabels.length - 1);
 
-  function drawAxes() {
+  function getRelativeMousePos(canvas, clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function drawChart(highlightX = null) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Axes
+    ctx.strokeStyle = '#000';
     ctx.beginPath();
     ctx.moveTo(padding, padding);
     ctx.lineTo(padding, canvas.height - padding);
-    ctx.moveTo(padding, canvas.height - padding);
     ctx.lineTo(canvas.width - padding, canvas.height - padding);
     ctx.stroke();
 
+    // Y-Axis Labels
     ctx.fillStyle = 'black';
     ctx.font = '12px sans-serif';
     for (let i = 0; i <= maxValue; i += 10) {
       const y = canvas.height - padding - i * scaleY;
-      ctx.fillText(i + " " + unit, padding - 50, y + 4);
+      ctx.fillText(i + " " + unit, padding - 40, y + 4);
       ctx.beginPath();
       ctx.moveTo(padding - 5, y);
       ctx.lineTo(padding, y);
       ctx.stroke();
     }
-  }
 
-  function drawLines() {
+    // Datasets: lines only (no points)
     datasets.forEach((data, idx) => {
       ctx.beginPath();
       ctx.strokeStyle = colors[idx];
@@ -697,6 +712,17 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
       });
       ctx.stroke();
     });
+
+    // Vertical guide line if hovering
+    if (highlightX !== null) {
+      ctx.beginPath();
+      ctx.moveTo(highlightX, padding);
+      ctx.lineTo(highlightX, canvas.height - padding);
+      ctx.strokeStyle = '#aaa';
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
   }
 
   function drawLegend() {
@@ -709,17 +735,9 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
     });
   }
 
-  function drawAll() {
-    drawAxes();
-    drawLines();
-  }
-
   function showTooltip(xClient, yClient) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = xClient - rect.left;
-    const mouseY = yClient - rect.top;
+    const { x: mouseX, y: mouseY } = getRelativeMousePos(canvas, xClient, yClient);
 
-    // If outside plot area, hide tooltip and redraw
     if (
       mouseX < padding ||
       mouseX > canvas.width - padding ||
@@ -727,64 +745,55 @@ function drawLineChart(container, xLabels, datasets, datasetLabels, colors, unit
       mouseY > canvas.height - padding
     ) {
       tooltip.style.display = 'none';
-      drawAll();
+      drawChart();
       return;
     }
 
-    drawAll();
+    drawChart(mouseX);
 
-    // Draw vertical line exactly at mouseX (cursor/finger)
-    ctx.beginPath();
-    ctx.moveTo(mouseX, padding);
-    ctx.lineTo(mouseX, canvas.height - padding);
-    ctx.strokeStyle = '#aaa';
-    ctx.setLineDash([4, 4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    let index = Math.round((mouseX - padding) / scaleX);
+    index = Math.max(0, Math.min(xLabels.length - 1, index));
+    const label = xLabels[index];
 
-    // Find closest data point index to mouseX for tooltip info
-    let closestIndex = Math.round((mouseX - padding) / scaleX);
-    closestIndex = Math.max(0, Math.min(xLabels.length - 1, closestIndex));
-
-    const label = xLabels[closestIndex];
     let info = `<strong>${label}</strong>`;
-    datasets.forEach((d, i) => {
-      info += `<br>${datasetLabels[i]}: ${d[closestIndex]} ${unit}`;
+    datasets.forEach((data, i) => {
+      info += `<br>${datasetLabels[i]}: ${data[index]} ${unit}`;
     });
 
-    const blockRect = container.getBoundingClientRect();
+    // Use client position for tooltip (screen space)
+    const rect = canvas.getBoundingClientRect();
     tooltip.innerHTML = info;
-    tooltip.style.left = (xClient - blockRect.left + 10) + 'px';
-    tooltip.style.top = (yClient - blockRect.top + 10) + 'px';
+    tooltip.style.left = (xClient - rect.left + 10) + 'px';
+    tooltip.style.top = (yClient - rect.top + 10) + 'px';
     tooltip.style.display = 'block';
   }
 
   function hideTooltip() {
     tooltip.style.display = 'none';
-    drawAll();
+    drawChart();
   }
 
+  // Event listeners
   canvas.addEventListener('mousemove', e => showTooltip(e.clientX, e.clientY));
   canvas.addEventListener('mouseleave', hideTooltip);
-
   canvas.addEventListener('touchstart', e => {
     if (e.touches.length > 0) {
       showTooltip(e.touches[0].clientX, e.touches[0].clientY);
     }
   });
-
   canvas.addEventListener('touchmove', e => {
     if (e.touches.length > 0) {
       showTooltip(e.touches[0].clientX, e.touches[0].clientY);
     }
     e.preventDefault();
   }, { passive: false });
-
   canvas.addEventListener('touchend', hideTooltip);
 
-  drawAll();
+  drawChart();
   drawLegend();
 }
+
+
 
 
 
@@ -806,7 +815,7 @@ function populatemultiday(weatherData) {
     dalycloudoutput[i] = (dailycloud);
 
 
-    
+
 
     card.innerHTML = `
 
@@ -823,7 +832,7 @@ function populatemultiday(weatherData) {
             <p><strong>Cloud Coverage:</strong> ${Math.round(dailycloud * 100) / 100}%</p>
             <p><strong>Precipitation:</strong> ${Math.round(weatherData.daily.precipitation_probability_max[i] * 100) / 100} %</p>
             <p><strong>Humidity:</strong> ${Math.round(dailyhumid * 100) / 100}%</p>
-            <p><strong>Moon Phase:</strong> ${mooniconfunction(moonillumin[i],moonphase[i])}</p>
+            <p><strong>Moon Phase:</strong> ${mooniconfunction(moonillumin[i], moonphase[i])}</p>
 
             </div>
           
@@ -1047,9 +1056,9 @@ function drawbarchartfast() {
       mooncalbarchart,
       totalcalc
     ],
-    labels: ['Temperature', 'Windspeed', 'Precipitation Chance', 'Humidty', 'Cloud Cover', 'Moon Phase','Day Total'],
-    colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)', 'rgb(199, 141, 204)','rgb(0, 0, 0)'],
-    unit: ["", '', '', '', "", "",""]
+    labels: ['Temperature', 'Windspeed', 'Precipitation Chance', 'Humidty', 'Cloud Cover', 'Moon Phase', 'Day Total'],
+    colors: ['red', 'rgb(192, 201, 73)', 'rgb(55, 96, 184)', 'rgb(50, 170, 218)', 'rgb(92, 108, 114)', 'rgb(199, 141, 204)', 'rgb(0, 0, 0)'],
+    unit: ["", '', '', '', "", "", ""]
   };
 
   drawBarChart(document.getElementById('chart1'), weatherData.daily.time, bargraph2.datasets, bargraph2.labels, bargraph2.colors, bargraph2.unit);
@@ -1144,7 +1153,7 @@ function outputclosestday() {
           <div class="closestdaytext">
             <p><strong>Humidity:</strong></p><p> ${Math.round(dalyhumidoutput[closestdayindex] * 100) / 100}%</p>
             <p><strong>Precipitation Chance:</strong></p><p> ${Math.round(weatherData.daily.precipitation_probability_max[closestdayindex] * 100) / 100} %</p>
-            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[closestdayindex],moonphase[closestdayindex])}</p>
+            <p><strong>Moon Phase:</strong><p></p> ${mooniconfunction(moonillumin[closestdayindex], moonphase[closestdayindex])}</p>
           </div>
           
             </div>
