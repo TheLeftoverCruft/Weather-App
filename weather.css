@@ -8,6 +8,7 @@
 
     #title {
       padding-left: 40vh;
+      gap: 0px;
     }
     #location {
       font-size: 20px;
@@ -63,6 +64,165 @@
 
 
     }
+    #locationInput {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 8px 0px 0px 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+      
+    }
+    #locationInput:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    #locationButt {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: white;
+      color: #696969;
+      border: 2px solid #ccc;
+      border-radius: 8px 0px 0px 8px;;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+
+    }
+    #locationButt:hover {
+      color: white;
+      background-color: #b3b3b3;
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    .gps-button {
+      padding: 10px 10px;
+      font-size: 16px;
+      background-color: #ccc;
+      color: white;
+      border-color: #ccc;
+      border: 5px none;
+      border-radius: 0px 8px 8px 0px;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      margin-left: -4px;
+      
+    }
+
+    .gps-button:hover {
+      background-color: #007BFF;
+    }
+
+    .gps-button svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+    }
+    .settings-button {
+      padding: 10px 10px;
+      font-size: 16px;
+      background-color: #ccc;
+      color: white;
+      border-color: #ccc;
+      border: 5px none;
+      border-radius: 0px 8px 8px 0px;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      margin-left: -5px;
+      
+    }
+
+    .settings-button:hover {
+      background-color: #007BFF;
+    }
+
+    .settings-button svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+    }
+.settings-tab {
+  position: absolute;
+  top: 20px;
+  right: 440px;
+  width: 200px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 14px;
+  z-index: 10;
+
+  display: none; /* <-- Hides by default */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.settings-tab.active {
+  display: flex;
+}
+
+/* Center the heading text */
+.settings-tab h4 {
+  margin: 0px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+      .switch-container {
+    width: 140px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .switch {
+    position: relative;
+    width: 140px;
+    height: 30px;
+    background: #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .knob {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 62px;
+    height: 22px;
+    background: #007bff;
+    border-radius: 10px;
+    transition: left 0.3s ease, background 0.3s ease;
+  }
+
+  .switch.active .knob {
+    left: 74px;
+    background: #28a745;
+  }
+
+  .units-label {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #000000;
+  }
+  
+
 
     /* Today */
 
@@ -123,8 +283,23 @@
 
     .todaytext {
       margin-right: 10px;
-      font-size: 1.2em;
+      font-size: 25px;
     }
+    .maindaytext {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 20px;
+    margin-left: 0px;
+    width: 250px;
+    height: 250px;
+    text-align: center;
+  }
+  .maindaytext p {
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.4;
+  }
 
     .weather-container {
       display: flex;
@@ -254,7 +429,7 @@ position: relative;
 
     /* 16-Days */
         #info3 {
-      height:100vh
+      height:1100px;
     }
     
     #multidaygridcontainer {
@@ -301,8 +476,8 @@ position: relative;
   justify-content: center;
   gap: 4px;
   margin-left: 0px;
-  width: 120px;
-  height: 250px;
+  width: 130px;
+  height: 330px;
 }
 .daytext p {
   margin: 0;
@@ -695,7 +870,25 @@ position: relative;
   margin: 0;
   line-height: 1.4;
 }
-
+    .mainlargercircle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: white;
+      ;
+      border: 10px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 50px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      color: black;
+    }
 
 
 

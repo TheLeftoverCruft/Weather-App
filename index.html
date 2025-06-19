@@ -15,7 +15,37 @@
   <div id="title">
 
     <input type="text" id="locationInput" placeholder="Enter location">
-    <button onclick="getWeather()">Search</button>
+    <button class="gps-button" onclick="gpsgetWeather()" aria-label="Get Location">
+      <!-- GPS Icon (Crosshair-style) -->
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M12 8a4 4 0 100 8 4 4 0 000-8zm10 3h-2.07a8.003 8.003 0 00-6.93-6.93V2h-2v2.07a8.003 8.003 0 00-6.93 6.93H2v2h2.07a8.003 8.003 0 006.93 6.93V22h2v-2.07a8.003 8.003 0 006.93-6.93H22v-2z" />
+      </svg>
+    </button>
+
+    <button id="locationButt" onclick="getWeather()">Search</button>
+    <button class="settings-button" aria-label="Settings" onclick="toggleSettings()">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M19.14 12.94a7.953 7.953 0 000-1.88l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.6-.22l-2.39.96a8.03 8.03 0 00-1.6-.94l-.36-2.54a.5.5 0 00-.5-.43h-3.84a.5.5 0 00-.5.43l-.36 2.54a7.99 7.99 0 00-1.6.94l-2.39-.96a.5.5 0 00-.6.22l-1.92 3.32a.5.5 0 00.12.64l2.03 1.58a7.953 7.953 0 000 1.88l-2.03 1.58a.5.5 0 00-.12.64l1.92 3.32a.5.5 0 00.6.22l2.39-.96c.5.37 1.04.68 1.6.94l.36 2.54a.5.5 0 00.5.43h3.84a.5.5 0 00.5-.43l.36-2.54a7.99 7.99 0 001.6-.94l2.39.96a.5.5 0 00.6-.22l1.92-3.32a.5.5 0 00-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1115.5 12 3.5 3.5 0 0112 15.5z" />
+      </svg>
+    </button>
+    <div class="settings-tab" id="settingsTab">
+      <h4>Settings</h4>
+      <div class="switch-container">
+        <div class="labels">
+          <span>Metric</span>
+          <span>Imperial</span>
+        </div>
+
+        <div class="switch" id="unitSwitch" role="switch" aria-checked="false" tabindex="0">
+          <div class="knob"></div>
+        </div>
+
+        <div class="units-label">Units</div>
+      </div>
+
+    </div>
     <p id="errorMsg" class="error"></p>
     <h2 id="location">Please Enter Location</h2>
 
@@ -47,23 +77,23 @@
     </div>
     <div id="info2" class="info">
       <div id="linechart-wrapper">
-      <div class="chart-block">
-        <canvas class="hourlycanvas" width="600" height="300"></canvas>
-        <div class="tooltip"></div>
-        <div class="legend"></div>
-      </div>
+        <div class="chart-block">
+          <canvas class="hourlycanvas" width="600" height="300"></canvas>
+          <div class="tooltip"></div>
+          <div class="legend"></div>
+        </div>
 
-      <div class="chart-block">
-        <canvas class="hourlycanvas" width="600" height="300"></canvas>
-        <div class="tooltip"></div>
-        <div class="legend"></div>
-      </div>
+        <div class="chart-block">
+          <canvas class="hourlycanvas" width="600" height="300"></canvas>
+          <div class="tooltip"></div>
+          <div class="legend"></div>
+        </div>
 
-      <div class="chart-block">
-        <canvas class="hourlycanvas" width="600" height="300"></canvas>
-        <div class="tooltip"></div>
-        <div class="legend"></div>
-      </div>
+        <div class="chart-block">
+          <canvas class="hourlycanvas" width="600" height="300"></canvas>
+          <div class="tooltip"></div>
+          <div class="legend"></div>
+        </div>
       </div>
     </div>
     <div id="info3" class="info">
@@ -98,8 +128,8 @@
         </div>
         <button onclick="outputclosestday()" id="submitbutton">Search Best Day</button>
         <div class="top-row">
-        <div id="bestdayweather" class="weather-box">Best Day weather info will appear here.</div>
-        <div id="closestdayweather" class="weather-box">Closest Day weather info will appear here.</div>
+          <div id="bestdayweather" class="weather-box">Best Day weather info will appear here.</div>
+          <div id="closestdayweather" class="weather-box">Closest Day weather info will appear here.</div>
         </div>
 
         <div id="chart1" class="chartContainer">
